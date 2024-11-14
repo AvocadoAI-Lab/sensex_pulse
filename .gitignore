@@ -38,3 +38,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/public/data/poc3/
+/public/data/poc5/
+/public/data/redteam2/
+/.idea

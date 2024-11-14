@@ -1,0 +1,149 @@
+{
+  "common": {
+    "loading": "Loading security data...",
+    "error": {
+      "title": "Error Loading Data",
+      "default": "Failed to load security data"
+    },
+    "download": {
+      "button": "Download Report",
+      "generating": "Generating...",
+      "error": "Failed to generate report. Please try again."
+    },
+    "chart": {
+      "total": "Total: {count}",
+      "alerts": "alerts",
+      "events": "events",
+      "detections": "detections"
+    }
+  },
+  "layout": {
+    "title": "Group Security Analysis Dashboard",
+    "subtitle": "Comprehensive security analysis and monitoring across all agents",
+    "footer": "Real-time security analysis dashboard for monitoring and analyzing group-wide security events"
+  },
+  "dashboard": {
+    "title": "RedTeam2 Security Overview",
+    "subtitle": "Comprehensive security analysis across all agents in the RedTeam2 group",
+    "agentDetails": {
+      "title": "Agent Details",
+      "subtitle": "Detailed security analysis for each agent in the group"
+    }
+  },
+  "agent": {
+    "header": {
+      "title": "Agent: {name}",
+      "id": "ID: {id}",
+      "lastUpdated": "Last Updated: {date}"
+    },
+    "stats": {
+      "totalAlerts": {
+        "title": "Total Alerts",
+        "description": "All detected security events"
+      },
+      "criticalAlerts": {
+        "title": "Critical Alerts",
+        "description": "High severity events (Level ≥12)"
+      },
+      "uniqueRules": {
+        "title": "Unique Rules",
+        "description": "Distinct detection rules triggered"
+      }
+    },
+    "charts": {
+      "severity": "Alert Severity Distribution",
+      "events": "Event Type Distribution",
+      "eventsOfType": "events of this type",
+      "relativeFrequency": "Relative frequency",
+      "noData": "No event data available"
+    },
+    "alerts": {
+      "title": "Recent Alerts",
+      "showing": "Showing latest {count} alerts",
+      "level": "Level {level}",
+      "ruleId": "ID: {id}",
+      "windowsEvent": {
+        "title": "Windows Event Details",
+        "message": "Message",
+        "eventId": "Event ID",
+        "channel": "Channel"
+      }
+    }
+  },
+  "group": {
+    "stats": {
+      "totalAlerts": {
+        "title": "Total Alerts",
+        "description": "Across all agents"
+      },
+      "activeAgents": {
+        "title": "Active Agents",
+        "description": "Reporting security events"
+      },
+      "criticalAlerts": {
+        "title": "Critical Alerts",
+        "description": "Level 12 and above"
+      }
+    },
+    "table": {
+      "title": "Agent Alert Summary",
+      "columns": {
+        "agent": "Agent",
+        "totalAlerts": "Total Alerts",
+        "critical": "Critical",
+        "high": "High",
+        "medium": "Medium",
+        "low": "Low"
+      }
+    },
+    "charts": {
+      "distribution": "Alert Distribution by Agent and Severity",
+      "agentName": "Agent Name",
+      "alertCount": "Number of Alerts",
+      "tooltipLabel": "{label}: {value} alerts"
+    }
+  },
+  "compliance": {
+    "summary": {
+      "totalChecks": "Total Compliance Checks",
+      "complianceRate": "Compliance Rate",
+      "failureRate": "Critical Failure Rate"
+    },
+    "chart": {
+      "title": "Policy Coverage",
+      "checksLabel": "{count} checks"
+    },
+    "insights": {
+      "title": "Compliance Insights",
+      "goodCompliance": "Strong compliance performance with over 80% pass rate",
+      "poorCompliance": "Attention needed: Compliance rate below recommended threshold",
+      "goodFailureRate": "Acceptable failure rate within normal range",
+      "poorFailureRate": "Critical: High failure rate requires immediate attention"
+    }
+  },
+  "rules": {
+    "title": "Top Alert Categories",
+    "severityTimeline": "High Severity Alerts Over Time",
+    "date": "Date",
+    "alertCount": "Number of Alerts",
+    "columns": {
+      "category": "Category",
+      "alertCount": "Alert Count",
+      "percentage": "Percentage"
+    }
+  },
+  "mitre": {
+    "title": "MITRE ATT&CK Coverage",
+    "subtitle": "Analysis of detected tactics and techniques",
+    "totalDetections": "Total Detections",
+    "coverage": "Coverage",
+    "frequency": "Frequency",
+    "noData": "No MITRE ATT&CK data available",
+    "legend": {
+      "high": "High Coverage (75% or more)",
+      "medium": "Medium Coverage (50-74%)",
+      "low": "Low Coverage (25-49%)",
+      "minimal": "Minimal Coverage (less than 25%)"
+    }
+  }
+}
