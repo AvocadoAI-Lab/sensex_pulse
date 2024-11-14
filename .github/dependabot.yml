@@ -8,18 +8,22 @@ updates:
     # Check for updates once a week
     schedule:
       interval: "weekly"
-    # Specify labels for pull requests
-    labels:
-      - "dependencies"
-      - "automerge"
-    # Limit the number of open pull requests for version updates
-    open-pull-requests-limit: 10
-    # Configure pull request settings
-    pull-request-branch-name:
-      separator: "-"
-    # Set reviewers for pull requests
-    reviewers:
-      - "owner"
+    # Specify version update strategy
+    versioning-strategy: increase-if-necessary
+    # Allow only minor and patch updates to minimize breaking changes
+    allow:
+      - dependency-type: "all"
+        update-type: "semver-minor"
+      - dependency-type: "all"
+        update-type: "semver-patch"
+    # Ignore major version updates for certain packages
+    ignore:
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint-config-next"
+        update-types: ["version-update:semver-major"]
     # Group dependencies updates
     groups:
       # Group all development dependencies together
@@ -38,14 +42,17 @@ updates:
           - "next-intl"
           - "chart.js"
           - "react-chartjs-2"
+    # Remove reviewers configuration as it requires repository collaborator setup
+    # Remove labels that don't exist yet
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
-    labels:
-      - "dependencies"
-      - "github-actions"
-    # Limit the number of open pull requests for version updates
-    open-pull-requests-limit: 5
+    # Allow only minor and patch updates for actions
+    allow:
+      - dependency-type: "all"
+        update-type: "semver-minor"
+      - dependency-type: "all"
+        update-type: "semver-patch"

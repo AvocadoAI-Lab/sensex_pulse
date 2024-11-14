@@ -1,0 +1,88 @@
+name: Sync Labels
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - '.github/labels.yml'
+  workflow_dispatch:
+
+jobs:
+  sync-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create/Update Labels
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const labels = [
+              {
+                name: 'dependencies',
+                color: '0366d6',
+                description: 'Pull requests that update a dependency file'
+              },
+              {
+                name: 'security',
+                color: 'd73a4a',
+                description: 'Pull requests that address a security vulnerability'
+              },
+              {
+                name: 'ci',
+                color: '44cc11',
+                description: 'Changes to CI/CD configuration files'
+              },
+              {
+                name: 'documentation',
+                color: '0075ca',
+                description: 'Changes to documentation'
+              },
+              {
+                name: 'enhancement',
+                color: 'a2eeef',
+                description: 'New feature or enhancement'
+              },
+              {
+                name: 'bug',
+                color: 'd73a4a',
+                description: 'Something is not working'
+              }
+            ];
+
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name
+                });
+                
+                // Label exists, update it
+                await github.rest.issues.updateLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label.name,
+                  color: label.color,
+                  description: label.description
+                });
+                console.log(`Updated label: ${label.name}`);
+              } catch (error) {
+                if (error.status === 404) {
+                  // Label doesn't exist, create it
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label.name,
+                    color: label.color,
+                    description: label.description
+                  });
+                  console.log(`Created label: ${label.name}`);
+                } else {
+                  console.error(`Error handling label ${label.name}:`, error);
+                  throw error;
+                }
+              }
+            }
