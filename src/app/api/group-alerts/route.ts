@@ -1,7 +1,7 @@
 import {NextResponse} from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import type {Hit, Root} from '../../../types/alerts';
+import type {Hit, Types} from '../../../types/alerts';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -12,15 +12,15 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 構建group目錄路徑
+    // Build group directory path
     const groupPath = path.join(process.cwd(), 'public', 'data', group);
 
-    // 讀取該group下的所有alerts文件
+    // Read all alerts files in the group
     const files = fs.readdirSync(groupPath)
       .filter(file => file.startsWith('alerts_') && file.endsWith('.json'));
 
-    // 合併所有alerts數據
-    const allAlerts: Root = {
+    // Merge all alerts data
+    const allAlerts: Types = {
       took: 0,
       timed_out: false,
       _shards: {
@@ -42,9 +42,9 @@ export async function GET(request: Request) {
     for (const file of files) {
       const filePath = path.join(groupPath, file);
       const fileContent = fs.readFileSync(filePath, 'utf-8');
-      const alertData = JSON.parse(fileContent) as Root;
+      const alertData = JSON.parse(fileContent) as Types;
 
-      // 合併hits數據
+      // Merge hits data
       allAlerts.hits.hits = [...allAlerts.hits.hits, ...alertData.hits.hits];
       allAlerts.hits.total.value += alertData.hits.total.value;
     }

@@ -1,196 +1,201 @@
-export interface Root {
-  took: number;
-  timed_out: boolean;
-  _shards: Shards;
-  hits: Hits;
+export interface Types {
+    _shards:   Shards;
+    hits:      Hits;
+    timed_out: boolean;
+    took:      number;
 }
 
 export interface Shards {
-  total: number;
-  successful: number;
-  skipped: number;
-  failed: number;
+    failed:     number;
+    skipped:    number;
+    successful: number;
+    total:      number;
 }
 
 export interface Hits {
-  total: Total;
-  max_score: number | null;
-  hits: Hit[];
-}
-
-export interface Total {
-  value: number;
-  relation: string;
+    hits:      Hit[];
+    max_score: null;
+    total:     Total;
 }
 
 export interface Hit {
-  _index: string;
-  _id: string;
-  _score: number | null;
-  _source: Source;
-  sort: number[];
+    _id:     string;
+    _index:  string;
+    _score:  null;
+    _source: Source;
+    sort:    number[];
 }
 
 export interface Source {
-  agent: Agent;
-  manager: Manager;
-  data: Data;
-  rule: Rule;
-  location: string;
-  decoder: Decoder;
-  timestamp: string;
+    agent:     Agent;
+    data:      Data;
+    decoder:   Decoder;
+    location:  string;
+    manager:   Decoder;
+    rule:      Rule;
+    timestamp: string;
 }
 
 export interface Agent {
-  name: string;
-  id: string;
-}
-
-export interface Manager {
-  name: string;
+    id:   string;
+    name: string;
 }
 
 export interface Data {
-  win?: WindowsData;
-  vulnerability?: VulnerabilityData;
-  integration?: string;
-  virustotal?: VirusTotalData;
+    integration?:   string;
+    virustotal?:    Virustotal;
+    vulnerability?: Vulnerability;
+    win?:           Win;
+    sca?:          ScaData;  // Adding SCA type
 }
 
-export interface WindowsData {
-  eventdata: WindowsEventData;
-  system: WindowsSystemData;
+export interface ScaData {
+    passed?: string;
+    failed?: string;
+    invalid?: string;
+    policy?: string;
 }
 
-export interface WindowsEventData {
-  serviceType?: string;
-  accountName?: string;
-  imagePath?: string;
-  startType?: string;
-  serviceName?: string;
-  subjectLogonId?: string;
-  ipAddress?: string;
-  authenticationPackageName?: string;
-  workstationName?: string;
-  subStatus?: string;
-  logonProcessName?: string;
-  targetUserName?: string;
-  keyLength?: string;
-  subjectUserSid?: string;
-  processId?: string;
-  ipPort?: string;
-  failureReason?: string;
-  targetDomainName?: string;
-  targetUserSid?: string;
-  logonType?: string;
-  status?: string;
-  data?: string;
-  binary?: string;
+export interface Virustotal {
+    found:     string;
+    malicious: string;
+    permalink: string;
+    positives: string;
+    scan_date: Date;
+    sha1:      string;
+    source:    SourceClass;
+    total:     string;
 }
 
-export interface WindowsSystemData {
-  eventID: string;
-  keywords: string;
-  level: string;
-  channel: string;
-  opcode: string;
-  message: string;
-  version: string;
-  systemTime: string;
-  eventRecordID: string;
-  threadID: string;
-  computer: string;
-  task: string;
-  processID: string;
-  severityValue: string;
-  providerName: string;
-  eventSourceName?: string;
-  providerGuid?: string;
+export interface SourceClass {
+    alert_id: string;
+    file:     string;
+    md5:      string;
+    sha1:     string;
 }
 
-export interface VulnerabilityData {
-  severity: string;
-  package: VulnerabilityPackage;
-  assigner: string;
-  cwe_reference?: string;
-  published: string;
-  title: string;
-  type: string;
-  rationale: string;
-  reference: string;
-  cve: string;
-  enumeration: string;
-  cvss: CvssData;
-  updated: string;
-  status: string;
+export interface Vulnerability {
+    assigner:       string;
+    cve:            string;
+    cvss:           Cvss;
+    cwe_reference?: string;
+    enumeration:    string;
+    package:        Package;
+    published:      Date;
+    rationale:      string;
+    reference:      string;
+    severity:       string;
+    status:         string;
+    title:          string;
+    type:           string;
+    updated:        Date;
 }
 
-export interface VulnerabilityPackage {
-  condition: string;
-  name: string;
-  source: string;
-  version: string;
-  architecture: string;
+export interface Cvss {
+    cvss2?: Cvss2;
+    cvss3?: Cvss3;
 }
 
-export interface CvssData {
-  cvss3?: Cvss3Data;
-  cvss2?: Cvss2Data;
-}
-
-export interface Cvss3Data {
-  base_score: string;
-  vector: Cvss3Vector;
-}
-
-export interface Cvss3Vector {
-  user_interaction: string;
-  integrity_impact: string;
-  scope: string;
-  availability: string;
-  confidentiality_impact: string;
-  privileges_required: string;
-  attack_vector?: string;
-}
-
-export interface Cvss2Data {
-  base_score: string;
-  vector: Cvss2Vector;
+export interface Cvss2 {
+    base_score: string;
+    vector:     Cvss2Vector;
 }
 
 export interface Cvss2Vector {
-  integrity_impact: string;
-  availability: string;
-  confidentiality_impact: string;
-  access_complexity: string;
-  authentication: string;
+    access_complexity:      string;
+    authentication:         string;
+    availability:           string;
+    confidentiality_impact: string;
+    integrity_impact:       string;
 }
 
-export interface VirusTotalData {
-  sha1: string;
-  malicious: string;
-  total: string;
-  found: string;
-  positives: string;
-  source: VirusTotalSource;
-  permalink: string;
-  scan_date: string;
+export interface Cvss3 {
+    base_score: string;
+    vector:     Cvss3Vector;
 }
 
-export interface VirusTotalSource {
-  sha1: string;
-  file: string;
-  alert_id: string;
-  md5: string;
+export interface Cvss3Vector {
+    attack_vector?:         string;
+    availability:           string;
+    confidentiality_impact: string;
+    integrity_impact:       string;
+    privileges_required:    string;
+    scope:                  string;
+    user_interaction:       string;
 }
 
-export interface Rule {
-  level: number;
-  description: string;
-  groups: string[];
-  id: string;
+export interface Package {
+    architecture: string;
+    condition:    string;
+    name:         string;
+    source:       string;
+    version:      string;
+}
+
+export interface Win {
+    eventdata: Eventdata;
+    system:    System;
+}
+
+export interface Eventdata {
+    accountName?:               string;
+    authenticationPackageName?: string;
+    binary?:                    string;
+    data?:                      string;
+    failureReason?:             string;
+    imagePath?:                 string;
+    ipAddress?:                 string;
+    ipPort?:                    string;
+    keyLength?:                 string;
+    logonProcessName?:          string;
+    logonType?:                 string;
+    param1?:                    string;
+    processId?:                 string;
+    serviceName?:               string;
+    serviceType?:               string;
+    startType?:                 string;
+    status?:                    string;
+    subStatus?:                 string;
+    subjectLogonId?:            string;
+    subjectUserSid?:            string;
+    targetDomainName?:          string;
+    targetUserName?:            string;
+    targetUserSid?:             string;
+    workstationName?:           string;
+}
+
+export interface System {
+    channel:          string;
+    computer:         string;
+    eventID:          string;
+    eventRecordID:    string;
+    eventSourceName?: string;
+    keywords:         string;
+    level:            string;
+    message:          string;
+    opcode:           string;
+    processID:        string;
+    providerGuid?:    string;
+    providerName:     string;
+    severityValue:    string;
+    systemTime:       Date;
+    task:             string;
+    threadID:         string;
+    version:          string;
 }
 
 export interface Decoder {
-  name: string;
+    name: string;
+}
+
+export interface Rule {
+    description: string;
+    groups:      string[];
+    id:          string;
+    level:       number;
+}
+
+export interface Total {
+    relation: string;
+    value:    number;
 }

@@ -4,11 +4,11 @@ import {useTranslations} from 'next-intl';
 import DashboardLayout from '../../components/layout/DashboardLayout';
 import GroupSummary from '../../components/group/GroupSummary';
 import AgentDetail from '../../components/agent/AgentDetail';
-import type {Hit, Root} from '../../types/alerts';
+import type {Hit, Types} from '../../types/alerts';
 
 export default function Home() {
   const t = useTranslations();
-  const [data, setData] = useState<Root | null>(null);
+  const [data, setData] = useState<Types | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ export default function Home() {
         }
         return response.json();
       })
-      .then((jsonData: Root) => {
+      .then((jsonData: Types) => {
         setData(jsonData);
         setLoading(false);
       })
@@ -31,7 +31,7 @@ export default function Home() {
       });
   }, []);
 
-  // 按agent分組警報數據
+  // Group alerts by agent
   const agentAlerts = useMemo(() => {
     if (!data) return {};
     

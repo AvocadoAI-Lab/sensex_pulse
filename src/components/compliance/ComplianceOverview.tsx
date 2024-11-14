@@ -2,12 +2,12 @@
 import {useTranslations} from 'next-intl';
 import {Doughnut} from 'react-chartjs-2';
 import {ArcElement, Chart as ChartJS, ChartOptions, Legend, Tooltip,} from 'chart.js';
-import type {Root} from '@/types/alerts';
+import type {Types} from '../../types/alerts';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface ComplianceOverviewProps {
-  data: Root;
+  data: Types;
 }
 
 export default function ComplianceOverview({ data }: ComplianceOverviewProps) {

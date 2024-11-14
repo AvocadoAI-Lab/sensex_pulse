@@ -7,12 +7,12 @@ const config = {
   experimental: {
     turbo: {
       rules: {
-        // Turbopack 配置（如果需要）
+        // Turbopack configuration (if needed)
       }
     }
   }
 };
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 export default withNextIntl(config);

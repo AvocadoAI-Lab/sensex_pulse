@@ -3,7 +3,7 @@ import React from 'react';
 import {useTranslations} from 'next-intl';
 import {Bar} from 'react-chartjs-2';
 import {BarElement, CategoryScale, Chart as ChartJS, Legend, LinearScale, Title, Tooltip, TooltipItem,} from 'chart.js';
-import type {Root} from '@/types/alerts';
+import type {Types} from '../../types/alerts';
 
 ChartJS.register(
   CategoryScale,
@@ -15,18 +15,18 @@ ChartJS.register(
 );
 
 interface GroupSummaryProps {
-  data: Root;
+  data: Types;
 }
 
 const GroupSummary: React.FC<GroupSummaryProps> = ({ data }) => {
   const groupT = useTranslations('group');
 
-  // 計算整體統計數據
+  // Calculate overall statistics
   const totalAlerts = data.hits.total.value;
   const uniqueAgents = new Set(data.hits.hits.map(hit => hit._source.agent.name));
   const criticalAlerts = data.hits.hits.filter(hit => hit._source.rule.level >= 12).length;
 
-  // 計算每個agent的警報數量和嚴重程度分佈
+  // Calculate alerts count and severity distribution for each agent
   const agentStats = data.hits.hits.reduce((acc: { 
     [key: string]: {
       total: number;
@@ -58,7 +58,7 @@ const GroupSummary: React.FC<GroupSummaryProps> = ({ data }) => {
     return acc;
   }, {});
 
-  // 準備圖表數據
+  // Prepare chart data
   const chartData = {
     labels: Object.keys(agentStats),
     datasets: [

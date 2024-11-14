@@ -11,7 +11,7 @@ import {
   Tooltip,
   TooltipItem,
 } from 'chart.js';
-import type {Root} from '@/types/alerts';
+import type {Types} from '../../types/alerts';
 
 ChartJS.register(
   CategoryScale,
@@ -23,7 +23,7 @@ ChartJS.register(
 );
 
 interface AlertSummaryProps {
-  data: Root;
+  data: Types;
 }
 
 export default function AlertSummary({ data }: AlertSummaryProps) {
