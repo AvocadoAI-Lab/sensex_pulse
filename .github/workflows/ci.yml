@@ -13,6 +13,8 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
+      # Don't cancel in-progress jobs if any matrix job fails
+      fail-fast: false
 
     steps:
       - uses: actions/checkout@v3
@@ -35,17 +37,80 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+        # Add error handling and retry for npm install
+        continue-on-error: true
+        id: npm-install
+      
+      # Retry npm install if it fails
+      - name: Retry Install dependencies
+        if: steps.npm-install.outcome == 'failure'
+        run: |
+          rm -rf node_modules
+          npm cache clean --force
+          npm ci
 
       - name: Type check
         run: npx tsc --noEmit
+        # Add error reporting
+        continue-on-error: true
+        id: type-check
+
+      - name: Report type check results
+        if: always()
+        run: |
+          if [ "${{ steps.type-check.outcome }}" == "failure" ]; then
+            echo "::error::Type check failed"
+            exit 1
+          fi
 
       - name: Lint
         run: npm run lint
+        continue-on-error: true
+        id: lint
+
+      - name: Report lint results
+        if: always()
+        run: |
+          if [ "${{ steps.lint.outcome }}" == "failure" ]; then
+            echo "::error::Lint check failed"
+            exit 1
+          fi
 
       - name: Build
         run: npm run build
         env:
           CI: true
+        id: build
+
+      # Store build artifacts
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: |
+            .next
+            !.next/cache
+          retention-days: 7
+
+      # Create job summary
+      - name: Create job summary
+        if: always()
+        run: |
+          echo "# Build Status Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Status Checks" >> $GITHUB_STEP_SUMMARY
+          echo "- Type Check: ${{ steps.type-check.outcome == 'success' && '✅' || '❌' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Lint: ${{ steps.lint.outcome == 'success' && '✅' || '❌' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Build: ${{ steps.build.outcome == 'success' && '✅' || '❌' }}" >> $GITHUB_STEP_SUMMARY
+
+      # Fail the workflow if any important step failed
+      - name: Check for failures
+        if: always()
+        run: |
+          if [ "${{ steps.type-check.outcome }}${{ steps.lint.outcome }}${{ steps.build.outcome }}" != "successsuccesssuccess" ]; then
+            exit 1
+          fi
 
       # Uncomment if you want to add automated tests
       # - name: Test

@@ -1,8 +1,8 @@
 # Sensex Pulse
 
-## CI/CD Workflows
+## CI Workflows
 
-This project uses GitHub Actions for continuous integration and deployment. Here's an overview of our workflows:
+This project uses GitHub Actions for continuous integration. Here's an overview of our workflows:
 
 ### Continuous Integration
 
@@ -13,15 +13,6 @@ Our CI workflow (`ci.yml`) runs on every push to main/master and pull requests:
 - 🏗️ Building the application
 - 💾 Dependency caching for faster builds
 
-### Deployment
-
-Our deployment workflow (`deploy.yml`) automatically deploys to production when changes are pushed to main/master:
-
-- 🚀 Automated production deployments
-- 🔐 Secure environment variable handling
-- 📊 Deployment status tracking
-- 📧 Automated notifications
-
 ### Dependency Management
 
 We use Dependabot (`dependabot.yml`) to keep dependencies up-to-date:
@@ -30,16 +21,15 @@ We use Dependabot (`dependabot.yml`) to keep dependencies up-to-date:
 - 🔄 Weekly updates for GitHub Actions
 - 🛡️ Security patches prioritization
 - 🎯 Controlled version updates:
-  - Allows minor and patch updates by default
-  - Major version updates are carefully managed
   - Dependencies are grouped for easier review
+  - Major version updates are carefully managed
 
 #### Version Update Strategy
 
 To maintain stability:
-- Minor and patch updates are automatically proposed
-- Major version updates for critical packages (e.g., Node.js types, ESLint) are manually reviewed
-- Dependencies are grouped by development and production for better management
+- Dependencies are grouped by development and production
+- Major version updates for critical packages are managed through version ignores
+- Security updates are prioritized
 
 ### Label Management
 
@@ -79,11 +69,9 @@ npm run lint
 
 ## Environment Variables
 
-The following environment variables are required for deployment:
+The following environment variables are required for development:
 
 - `NEXT_PUBLIC_API_URL`: The URL for the API endpoint
-
-Add additional environment variables in the deployment workflow as needed.
 
 ## Contributing
 
@@ -103,7 +91,6 @@ To work with Dependabot:
 2. Updates are grouped by development and production dependencies
 3. Version updates are controlled to minimize breaking changes
 4. Security updates are prioritized
-5. Reviews can be requested from repository collaborators
 
 To manually trigger a Dependabot update:
 ```bash
