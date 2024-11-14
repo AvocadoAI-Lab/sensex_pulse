@@ -15,17 +15,17 @@
     "date-fns": "^4.1.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
-    "next": "^14.2.10",
+    "next": "^15.0.3",
     "next-intl": "^3.25.1",
     "puppeteer": "^23.7.1",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
     "eslint": "^8",
     "eslint-config-next": "^14.2.10",
     "postcss": "^8",
