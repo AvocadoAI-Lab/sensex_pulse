@@ -1,0 +1,51 @@
+# Dependabot configuration file
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    # Look for `package.json` and `lock` files in the `root` directory
+    directory: "/"
+    # Check for updates once a week
+    schedule:
+      interval: "weekly"
+    # Specify labels for pull requests
+    labels:
+      - "dependencies"
+      - "automerge"
+    # Limit the number of open pull requests for version updates
+    open-pull-requests-limit: 10
+    # Configure pull request settings
+    pull-request-branch-name:
+      separator: "-"
+    # Set reviewers for pull requests
+    reviewers:
+      - "owner"
+    # Group dependencies updates
+    groups:
+      # Group all development dependencies together
+      development:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "prettier"
+          - "typescript"
+      # Group all production dependencies together
+      production:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "next-intl"
+          - "chart.js"
+          - "react-chartjs-2"
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    # Limit the number of open pull requests for version updates
+    open-pull-requests-limit: 5

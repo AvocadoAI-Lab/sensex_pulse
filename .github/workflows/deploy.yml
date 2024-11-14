@@ -1,0 +1,95 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Only run after CI workflow succeeds
+    needs: []  # You can add CI job here if you want to ensure it runs after CI
+
+    environment:
+      name: production
+      url: ${{ steps.deployment.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Add your production environment variables here
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          # Add other environment variables as needed
+
+      # Example deployment step - adjust based on your hosting platform
+      - name: Deploy to production
+        id: deployment
+        # Replace this with your actual deployment command/action
+        # Examples:
+        # - Vercel: uses: vercel/actions/deploy@v1
+        # - AWS: aws s3 sync ./out s3://your-bucket
+        # - Custom server: rsync, scp, etc.
+        run: |
+          echo "Deploying to production..."
+          # Add your deployment commands here
+          echo "url=https://your-production-url.com" >> $GITHUB_OUTPUT
+
+      # Optional: Notify about deployment status
+      - name: Notify deployment status
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const message = status === 'success' 
+              ? '🚀 Deployment successful!' 
+              : '❌ Deployment failed';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            })
+
+      # Optional: Create deployment status
+      - name: Update deployment status
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const status = '${{ job.status }}' === 'success' ? 'success' : 'failure';
+            
+            await github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: status,
+              environment_url: '${{ steps.deployment.outputs.url }}',
+              description: status === 'success' 
+                ? 'Deployment successful!' 
+                : 'Deployment failed'
+            });
