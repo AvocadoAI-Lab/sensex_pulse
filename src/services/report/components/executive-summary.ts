@@ -68,16 +68,6 @@ function generateScoreGauge(score: SecurityScore): string {
     const rotation = (score.score / 100) * 180;
     return `
     <div style="position: relative; width: 200px; height: 100px; margin: 0 auto;">
-        <!-- Gauge Background -->
-        <div style="
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            top: -100px;
-            border-radius: 100px;
-            background: ${score.gradient};
-            opacity: 0.1;
-        "></div>
         <!-- Score Display -->
         <div style="
             position: absolute;

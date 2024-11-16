@@ -71,16 +71,6 @@ function generateCoverageGauge(coverage: number): string {
 
     return `
     <div style="position: relative; width: 200px; height: 100px; margin: 0 auto;">
-        <!-- Gauge Background -->
-        <div style="
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            top: -100px;
-            border-radius: 100px;
-            background: linear-gradient(135deg, ${color} 0%, ${color}66 100%);
-            opacity: 0.1;
-        "></div>
         <!-- Score Display -->
         <div style="
             position: absolute;
