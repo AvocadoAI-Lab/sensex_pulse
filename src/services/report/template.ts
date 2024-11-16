@@ -8,111 +8,137 @@ export class ReportTemplateService {
     private static generateStyles(): string {
         return `
         <style>
-            @page {
-                margin: 0;
-                size: A4;
-            }
-            
-            body {
+            /* Reset and base styles */
+            * {
                 margin: 0;
                 padding: 0;
-                background-color: #f3f4f6;
+                box-sizing: border-box;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            
+            html, body {
+                width: 794px !important;
+                margin: 0 !important;
+                padding: 0 !important;
                 font-family: system-ui, -apple-system, sans-serif;
                 line-height: 1.5;
                 color: #1f2937;
+                background-color: white;
             }
 
-            .page-break {
-                break-after: page;
+            /* Page container */
+            .page {
+                width: 794px;
+                height: 1123px;
+                overflow: hidden;
+                position: relative;
+                page-break-after: always;
+                background-color: white;
+            }
+
+            .page:last-child {
+                page-break-after: avoid;
+            }
+
+            /* Content container */
+            .content {
+                padding: 48px;
+                height: 100%;
+            }
+
+            /* Grid system */
+            .grid {
+                display: grid;
+                grid-template-columns: repeat(12, 1fr);
+                gap: 24px;
+            }
+
+            .col-span-3 { grid-column: span 3; }
+            .col-span-4 { grid-column: span 4; }
+            .col-span-6 { grid-column: span 6; }
+            .col-span-8 { grid-column: span 8; }
+            .col-span-12 { grid-column: span 12; }
+
+            /* Card styles */
+            .card {
+                background: white;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                overflow: hidden;
+            }
+
+            /* Typography */
+            h1 { font-size: 32px; font-weight: 700; margin-bottom: 24px; }
+            h2 { font-size: 24px; font-weight: 600; margin-bottom: 20px; }
+            h3 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+            h4 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+            p { font-size: 14px; margin-bottom: 12px; }
+
+            /* Tables */
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                table-layout: fixed;
+            }
+
+            th, td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            th {
+                font-weight: 600;
+                background-color: #f9fafb;
+            }
+
+            /* Charts and visualizations */
+            .chart-container {
+                width: 100%;
+                height: 300px;
+                position: relative;
+            }
+
+            /* Progress bars */
+            .progress-bar {
+                height: 8px;
+                border-radius: 4px;
+                background-color: #e5e7eb;
+                overflow: hidden;
+            }
+
+            .progress-bar-fill {
+                height: 100%;
+                border-radius: 4px;
+                transition: width 0.5s ease;
             }
 
             /* Print-specific styles */
             @media print {
                 body {
-                    background-color: white;
-                }
-
-                .shadow-lg {
-                    box-shadow: none !important;
-                }
-
-                .bg-gradient-to-r {
-                    background: #1e40af !important;
                     -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
                 }
 
-                /* Ensure backgrounds print */
-                * {
-                    -webkit-print-color-adjust: exact !important;
-                    print-color-adjust: exact !important;
+                .page {
+                    break-after: page;
+                }
+
+                .no-break {
+                    break-inside: avoid;
+                }
+
+                .card {
+                    box-shadow: none;
+                    border: 1px solid #e5e7eb;
                 }
             }
-
-            /* Tailwind-like utilities */
-            .text-xs { font-size: 0.75rem; }
-            .text-sm { font-size: 0.875rem; }
-            .text-base { font-size: 1rem; }
-            .text-lg { font-size: 1.125rem; }
-            .text-xl { font-size: 1.25rem; }
-            .text-2xl { font-size: 1.5rem; }
-            .text-3xl { font-size: 1.875rem; }
-            .text-4xl { font-size: 2.25rem; }
-
-            .font-medium { font-weight: 500; }
-            .font-semibold { font-weight: 600; }
-            .font-bold { font-weight: 700; }
-
-            .mb-1 { margin-bottom: 0.25rem; }
-            .mb-2 { margin-bottom: 0.5rem; }
-            .mb-4 { margin-bottom: 1rem; }
-            .mb-6 { margin-bottom: 1.5rem; }
-            .mb-8 { margin-bottom: 2rem; }
-            .mb-12 { margin-bottom: 3rem; }
-
-            .mt-1 { margin-top: 0.25rem; }
-            .mt-2 { margin-top: 0.5rem; }
-            .mt-4 { margin-top: 1rem; }
-            .mt-6 { margin-top: 1.5rem; }
-            .mt-8 { margin-top: 2rem; }
-            .mt-12 { margin-top: 3rem; }
-
-            .p-4 { padding: 1rem; }
-            .p-6 { padding: 1.5rem; }
-            .p-8 { padding: 2rem; }
-            .p-12 { padding: 3rem; }
-
-            .rounded-lg { border-radius: 0.5rem; }
-            .rounded-full { border-radius: 9999px; }
-
-            .shadow-lg {
-                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                           0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            }
-
-            /* Grid system */
-            .grid { display: grid; }
-            .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-            .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-            .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-            .gap-4 { gap: 1rem; }
-            .gap-6 { gap: 1.5rem; }
-
-            /* Flexbox utilities */
-            .flex { display: flex; }
-            .items-center { align-items: center; }
-            .justify-between { justify-content: space-between; }
-            .space-y-4 > * + * { margin-top: 1rem; }
-
-            /* Colors */
-            .bg-white { background-color: white; }
-            .bg-gray-50 { background-color: #f9fafb; }
-            .bg-gray-100 { background-color: #f3f4f6; }
-            .text-gray-500 { color: #6b7280; }
-            .text-gray-600 { color: #4b5563; }
-            .text-gray-700 { color: #374151; }
-            .text-gray-800 { color: #1f2937; }
-            .text-gray-900 { color: #111827; }
         </style>`;
     }
 
@@ -127,10 +153,31 @@ export class ReportTemplateService {
             ${this.generateStyles()}
         </head>
         <body>
-            ${generateHeader(summary.groupName)}
-            ${generateExecutiveSummary(summary)}
-            ${generateVulnerabilityAnalysis(summary)}
-            ${generateMitreAnalysis(summary)}
+            <!-- Cover Page -->
+            <div class="page">
+                ${generateHeader(summary.groupName)}
+            </div>
+
+            <!-- Executive Summary -->
+            <div class="page">
+                <div class="content">
+                    ${generateExecutiveSummary(summary)}
+                </div>
+            </div>
+
+            <!-- Vulnerability Analysis -->
+            <div class="page">
+                <div class="content">
+                    ${generateVulnerabilityAnalysis(summary)}
+                </div>
+            </div>
+
+            <!-- MITRE Analysis -->
+            <div class="page">
+                <div class="content">
+                    ${generateMitreAnalysis(summary)}
+                </div>
+            </div>
         </body>
         </html>`;
     }
