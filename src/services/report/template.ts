@@ -1,169 +1,119 @@
-import {AgentSummary, GroupSummary} from './summary';
+import {GroupSummary} from './summary';
+import {generateHeader} from './components/header';
+import {generateExecutiveSummary} from './components/executive-summary';
+import {generateVulnerabilityAnalysis} from './components/vulnerability-analysis';
+import {generateMitreAnalysis} from './components/mitre-analysis';
 
 export class ReportTemplateService {
-    private static generateHeader(groupName: string): string {
+    private static generateStyles(): string {
         return `
-        <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-8">
-            <h1 class="text-3xl font-bold">${groupName} Security Report</h1>
-            <p class="text-sm mt-2">Generated on ${new Date().toLocaleString()}</p>
-        </header>`;
-    }
+        <style>
+            @page {
+                margin: 0;
+                size: A4;
+            }
+            
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #f3f4f6;
+                font-family: system-ui, -apple-system, sans-serif;
+                line-height: 1.5;
+                color: #1f2937;
+            }
 
-    private static generateOverview(summary: GroupSummary): string {
-        return `
-        <section class="p-8 bg-white shadow-lg rounded-lg m-8">
-            <h2 class="text-2xl font-semibold mb-6">Overview</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-blue-50 p-6 rounded-lg">
-                    <h3 class="text-lg font-medium text-blue-800">Total Agents</h3>
-                    <p class="text-3xl font-bold text-blue-600">${summary.totalAgents}</p>
-                </div>
-                <div class="bg-blue-50 p-6 rounded-lg">
-                    <h3 class="text-lg font-medium text-blue-800">Total Alerts</h3>
-                    <p class="text-3xl font-bold text-blue-600">${summary.totalAlerts}</p>
-                </div>
-                <div class="bg-red-50 p-6 rounded-lg">
-                    <h3 class="text-lg font-medium text-red-800">Critical Vulnerabilities</h3>
-                    <p class="text-3xl font-bold text-red-600">${summary.criticalVulnerabilities.length}</p>
-                </div>
-            </div>
-        </section>`;
-    }
+            .page-break {
+                break-after: page;
+            }
 
-    private static generateSeverityDistribution(distribution: { [key: number]: number }): string {
-        const severityLabels: { [key: number]: string } = {
-            0: 'Info',
-            1: 'Low',
-            2: 'Medium',
-            3: 'High',
-            4: 'Critical'
-        };
+            /* Print-specific styles */
+            @media print {
+                body {
+                    background-color: white;
+                }
 
-        const items = Object.entries(distribution).map(([level, count]) => {
-            const numLevel = Number(level);
-            return `
-            <div class="flex items-center justify-between p-4 border-b">
-                <span class="font-medium ${this.getSeverityClass(numLevel)}">
-                    ${severityLabels[numLevel] || `Level ${numLevel}`}
-                </span>
-                <span class="text-gray-600">${count}</span>
-            </div>`;
-        }).join('');
+                .shadow-lg {
+                    box-shadow: none !important;
+                }
 
-        return `
-        <section class="p-8 bg-white shadow-lg rounded-lg m-8">
-            <h2 class="text-2xl font-semibold mb-6">Severity Distribution</h2>
-            <div class="bg-white rounded-lg">
-                ${items}
-            </div>
-        </section>`;
-    }
+                .bg-gradient-to-r {
+                    background: #1e40af !important;
+                    -webkit-print-color-adjust: exact;
+                }
 
-    private static generateAgentSummaries(agents: AgentSummary[]): string {
-        return `
-        <section class="p-8 bg-white shadow-lg rounded-lg m-8">
-            <h2 class="text-2xl font-semibold mb-6">Agent Summaries</h2>
-            <div class="grid grid-cols-1 gap-6">
-                ${agents.map(agent => this.generateAgentCard(agent)).join('')}
-            </div>
-        </section>`;
-    }
+                /* Ensure backgrounds print */
+                * {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+            }
 
-    private static generateAgentCard(agent: AgentSummary): string {
-        const recentAlerts = agent.recentAlerts.map(alert => `
-            <div class="p-4 border-b last:border-b-0">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <p class="font-medium">${alert._source.rule.description}</p>
-                        <p class="text-sm text-gray-600 mt-1">${new Date(alert._source.timestamp).toLocaleString()}</p>
-                    </div>
-                    <span class="${this.getSeverityClass(alert._source.rule.level)} px-2 py-1 rounded text-sm">
-                        Level ${alert._source.rule.level}
-                    </span>
-                </div>
-            </div>
-        `).join('');
+            /* Tailwind-like utilities */
+            .text-xs { font-size: 0.75rem; }
+            .text-sm { font-size: 0.875rem; }
+            .text-base { font-size: 1rem; }
+            .text-lg { font-size: 1.125rem; }
+            .text-xl { font-size: 1.25rem; }
+            .text-2xl { font-size: 1.5rem; }
+            .text-3xl { font-size: 1.875rem; }
+            .text-4xl { font-size: 2.25rem; }
 
-        return `
-        <div class="bg-gray-50 rounded-lg overflow-hidden border border-gray-200">
-            <div class="bg-gray-100 p-6">
-                <h3 class="text-xl font-semibold">${agent.name}</h3>
-                <p class="text-gray-600">ID: ${agent.id}</p>
-                <p class="text-gray-600 mt-2">Total Alerts: ${agent.totalAlerts}</p>
-            </div>
-            <div class="p-6">
-                <h4 class="font-medium mb-4">Recent Alerts</h4>
-                <div class="bg-white rounded-lg border border-gray-200">
-                    ${recentAlerts}
-                </div>
-            </div>
-        </div>`;
-    }
+            .font-medium { font-weight: 500; }
+            .font-semibold { font-weight: 600; }
+            .font-bold { font-weight: 700; }
 
-    private static generateVulnerabilities(vulnerabilities: GroupSummary['criticalVulnerabilities']): string {
-        if (vulnerabilities.length === 0) {
-            return '';
-        }
+            .mb-1 { margin-bottom: 0.25rem; }
+            .mb-2 { margin-bottom: 0.5rem; }
+            .mb-4 { margin-bottom: 1rem; }
+            .mb-6 { margin-bottom: 1.5rem; }
+            .mb-8 { margin-bottom: 2rem; }
+            .mb-12 { margin-bottom: 3rem; }
 
-        const vulnItems = vulnerabilities.map(vuln => `
-            <div class="bg-white p-6 rounded-lg border border-red-200 mb-4">
-                <div class="flex justify-between items-start">
-                    <h4 class="text-lg font-medium text-red-800">${vuln.cve}</h4>
-                    <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
-                        ${vuln.severity}
-                    </span>
-                </div>
-                <p class="mt-2">${vuln.title}</p>
-                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <span class="font-medium">Package:</span> ${vuln.package.name}
-                    </div>
-                    <div>
-                        <span class="font-medium">Version:</span> ${vuln.package.version}
-                    </div>
-                </div>
-                <p class="mt-4 text-sm text-gray-600">${vuln.rationale}</p>
-            </div>
-        `).join('');
+            .mt-1 { margin-top: 0.25rem; }
+            .mt-2 { margin-top: 0.5rem; }
+            .mt-4 { margin-top: 1rem; }
+            .mt-6 { margin-top: 1.5rem; }
+            .mt-8 { margin-top: 2rem; }
+            .mt-12 { margin-top: 3rem; }
 
-        return `
-        <section class="p-8 bg-white shadow-lg rounded-lg m-8">
-            <h2 class="text-2xl font-semibold mb-6">Critical Vulnerabilities</h2>
-            ${vulnItems}
-        </section>`;
-    }
+            .p-4 { padding: 1rem; }
+            .p-6 { padding: 1.5rem; }
+            .p-8 { padding: 2rem; }
+            .p-12 { padding: 3rem; }
 
-    private static generateMitreCoverage(mitreCoverage: GroupSummary['mitreCoverage']): string {
-        const tactics = Object.entries(mitreCoverage.tactics)
-            .map(([tactic, count]) => `
-                <div class="flex justify-between items-center p-4 border-b last:border-b-0">
-                    <span class="font-medium">${tactic}</span>
-                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">${count}</span>
-                </div>
-            `).join('');
+            .rounded-lg { border-radius: 0.5rem; }
+            .rounded-full { border-radius: 9999px; }
 
-        return `
-        <section class="p-8 bg-white shadow-lg rounded-lg m-8">
-            <h2 class="text-2xl font-semibold mb-6">MITRE ATT&CK Coverage</h2>
-            <div class="bg-white rounded-lg border border-gray-200">
-                ${tactics}
-            </div>
-        </section>`;
-    }
+            .shadow-lg {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+                           0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
 
-    private static getSeverityClass(level: number): string {
-        switch (true) {
-            case level >= 15:
-                return 'text-red-800 bg-red-100';
-            case level >= 12:
-                return 'text-orange-800 bg-orange-100';
-            case level >= 8:
-                return 'text-yellow-800 bg-yellow-100';
-            case level >= 4:
-                return 'text-blue-800 bg-blue-100';
-            default:
-                return 'text-gray-800 bg-gray-100';
-        }
+            /* Grid system */
+            .grid { display: grid; }
+            .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+            .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .gap-4 { gap: 1rem; }
+            .gap-6 { gap: 1.5rem; }
+
+            /* Flexbox utilities */
+            .flex { display: flex; }
+            .items-center { align-items: center; }
+            .justify-between { justify-content: space-between; }
+            .space-y-4 > * + * { margin-top: 1rem; }
+
+            /* Colors */
+            .bg-white { background-color: white; }
+            .bg-gray-50 { background-color: #f9fafb; }
+            .bg-gray-100 { background-color: #f3f4f6; }
+            .text-gray-500 { color: #6b7280; }
+            .text-gray-600 { color: #4b5563; }
+            .text-gray-700 { color: #374151; }
+            .text-gray-800 { color: #1f2937; }
+            .text-gray-900 { color: #111827; }
+        </style>`;
     }
 
     public static generateTemplate(summary: GroupSummary): string {
@@ -174,24 +124,13 @@ export class ReportTemplateService {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${summary.groupName} Security Report</title>
-            <script src="https://cdn.tailwindcss.com"></script>
-            <style>
-                @page {
-                    margin: 0;
-                }
-                body {
-                    background-color: #f3f4f6;
-                    font-family: system-ui, -apple-system, sans-serif;
-                }
-            </style>
+            ${this.generateStyles()}
         </head>
         <body>
-            ${this.generateHeader(summary.groupName)}
-            ${this.generateOverview(summary)}
-            ${this.generateSeverityDistribution(summary.overallSeverityDistribution)}
-            ${this.generateMitreCoverage(summary.mitreCoverage)}
-            ${this.generateVulnerabilities(summary.criticalVulnerabilities)}
-            ${this.generateAgentSummaries(summary.agentSummaries)}
+            ${generateHeader(summary.groupName)}
+            ${generateExecutiveSummary(summary)}
+            ${generateVulnerabilityAnalysis(summary)}
+            ${generateMitreAnalysis(summary)}
         </body>
         </html>`;
     }
