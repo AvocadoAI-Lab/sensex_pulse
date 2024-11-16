@@ -140,7 +140,7 @@ export function generateHeader(groupName: string): string {
                                 border-radius: 12px;
                                 display: flex;
                                 align-items: center;
-                                justify-center: center;
+                                justify-content: center;
                                 margin: 0 auto 16px;
                             ">
                                 <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
