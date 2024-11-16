@@ -3,6 +3,7 @@ import {generateHeader} from './components/header';
 import {generateExecutiveSummary} from './components/executive-summary';
 import {generateVulnerabilityAnalysis} from './components/vulnerability-analysis';
 import {generateMitreAnalysis} from './components/mitre-analysis';
+import {generateAgentDetails} from './components/agent-details';
 
 export class ReportTemplateService {
     private static generateStyles(): string {
@@ -52,35 +53,35 @@ export class ReportTemplateService {
                 height: 100%;
             }
 
-            /* Grid system */
-            .grid {
-                display: grid;
-                grid-template-columns: repeat(12, 1fr);
-                gap: 24px;
+            /* Print-specific styles */
+            @media print {
+                body {
+                    background-color: white;
+                }
+
+                .page {
+                    break-after: page;
+                }
+
+                .no-break {
+                    break-inside: avoid;
+                }
+
+                /* Ensure backgrounds print */
+                * {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+
+                /* Gradient backgrounds */
+                .bg-gradient-to-br,
+                .bg-gradient-to-r {
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
             }
 
-            .col-span-3 { grid-column: span 3; }
-            .col-span-4 { grid-column: span 4; }
-            .col-span-6 { grid-column: span 6; }
-            .col-span-8 { grid-column: span 8; }
-            .col-span-12 { grid-column: span 12; }
-
-            /* Card styles */
-            .card {
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-                overflow: hidden;
-            }
-
-            /* Typography */
-            h1 { font-size: 32px; font-weight: 700; margin-bottom: 24px; }
-            h2 { font-size: 24px; font-weight: 600; margin-bottom: 20px; }
-            h3 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
-            h4 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
-            p { font-size: 14px; margin-bottom: 12px; }
-
-            /* Tables */
+            /* Table styles */
             table {
                 width: 100%;
                 border-collapse: collapse;
@@ -98,13 +99,6 @@ export class ReportTemplateService {
                 background-color: #f9fafb;
             }
 
-            /* Charts and visualizations */
-            .chart-container {
-                width: 100%;
-                height: 300px;
-                position: relative;
-            }
-
             /* Progress bars */
             .progress-bar {
                 height: 8px;
@@ -117,27 +111,6 @@ export class ReportTemplateService {
                 height: 100%;
                 border-radius: 4px;
                 transition: width 0.5s ease;
-            }
-
-            /* Print-specific styles */
-            @media print {
-                body {
-                    -webkit-print-color-adjust: exact;
-                    print-color-adjust: exact;
-                }
-
-                .page {
-                    break-after: page;
-                }
-
-                .no-break {
-                    break-inside: avoid;
-                }
-
-                .card {
-                    box-shadow: none;
-                    border: 1px solid #e5e7eb;
-                }
             }
         </style>`;
     }
@@ -160,22 +133,89 @@ export class ReportTemplateService {
 
             <!-- Executive Summary -->
             <div class="page">
-                <div class="content">
-                    ${generateExecutiveSummary(summary)}
-                </div>
+                ${generateExecutiveSummary(summary)}
             </div>
 
             <!-- Vulnerability Analysis -->
             <div class="page">
-                <div class="content">
-                    ${generateVulnerabilityAnalysis(summary)}
-                </div>
+                ${generateVulnerabilityAnalysis(summary)}
             </div>
 
             <!-- MITRE Analysis -->
             <div class="page">
-                <div class="content">
-                    ${generateMitreAnalysis(summary)}
+                ${generateMitreAnalysis(summary)}
+            </div>
+
+            <!-- Agent Details -->
+            ${summary.agentSummaries.map(agent => `
+                <!-- Agent: ${agent.name} -->
+                ${generateAgentDetails(agent)}
+            `).join('\n')}
+
+            <!-- Table of Contents -->
+            <div class="page">
+                <div style="padding: 48px; height: 100%; background: white;">
+                    <div style="max-width: 800px; margin: 0 auto;">
+                        <h2 style="font-size: 32px; font-weight: 700; color: #1f2937; margin-bottom: 48px;">
+                            Table of Contents
+                        </h2>
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 16px;
+                                background: #f9fafb;
+                                border-radius: 8px;
+                            ">
+                                <span style="font-size: 16px; font-weight: 500; color: #111827;">Executive Summary</span>
+                                <span style="color: #6b7280;">Page 2</span>
+                            </div>
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 16px;
+                                background: #f9fafb;
+                                border-radius: 8px;
+                            ">
+                                <span style="font-size: 16px; font-weight: 500; color: #111827;">Vulnerability Analysis</span>
+                                <span style="color: #6b7280;">Page 3</span>
+                            </div>
+                            <div style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 16px;
+                                background: #f9fafb;
+                                border-radius: 8px;
+                            ">
+                                <span style="font-size: 16px; font-weight: 500; color: #111827;">MITRE ATT&CK Analysis</span>
+                                <span style="color: #6b7280;">Page 4</span>
+                            </div>
+                            <div style="margin-top: 24px;">
+                                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px;">
+                                    Agent Details
+                                </h3>
+                                ${summary.agentSummaries.map((agent, index) => `
+                                <div style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    padding: 16px;
+                                    background: #f9fafb;
+                                    border-radius: 8px;
+                                    margin-bottom: 8px;
+                                ">
+                                    <span style="font-size: 16px; font-weight: 500; color: #111827;">
+                                        ${agent.name}
+                                    </span>
+                                    <span style="color: #6b7280;">Page ${5 + index}</span>
+                                </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </body>
