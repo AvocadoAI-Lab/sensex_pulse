@@ -13,6 +13,15 @@ export class ReportTemplateService {
         return `<style>${css}</style>`;
     }
 
+    private static generateBackToTocButton(): string {
+        return `
+        <a href="#table-of-contents" class="back-to-toc">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+            </svg>
+        </a>`;
+    }
+
     private static generateCoverPage(): string {
         return `
         <div class="logo">
@@ -75,70 +84,86 @@ export class ReportTemplateService {
                 ${this.generateCoverPage()}
             </div>
 
+            <!-- Table of Contents -->
+            <div id="table-of-contents" class="page">
+                <div class="page-content">
+                    <div class="toc-container">
+                        <h2 class="toc-header">Table of Contents</h2>
+                        <div class="toc-section">
+                            <div class="toc-item">
+                                <a href="#executive-summary">
+                                    <span>Executive Summary</span>
+                                    <span class="page-number">3</span>
+                                </a>
+                            </div>
+                            <div class="toc-item">
+                                <a href="#vulnerability-analysis">
+                                    <span>Vulnerability Analysis</span>
+                                    <span class="page-number">4</span>
+                                </a>
+                            </div>
+                            <div class="toc-item">
+                                <a href="#mitre-analysis">
+                                    <span>MITRE ATT&CK Analysis</span>
+                                    <span class="page-number">5</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="toc-section">
+                            <h3>Agent Details</h3>
+                            ${summary.agentSummaries.map((agent, index) => `
+                            <div class="toc-item">
+                                <a href="#agent-${index}">
+                                    <span>${agent.name}</span>
+                                    <span class="page-number">${6 + index}</span>
+                                </a>
+                            </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Executive Summary -->
-            <div class="page report-page">
+            <div id="executive-summary" class="page">
                 <div class="page-content">
                     <div class="content-wrapper">
                         ${generateExecutiveSummary(summary)}
                     </div>
                 </div>
+                ${this.generateBackToTocButton()}
             </div>
 
             <!-- Vulnerability Analysis -->
-            <div class="page report-page">
+            <div id="vulnerability-analysis" class="page">
                 <div class="page-content">
                     <div class="content-wrapper">
                         ${generateVulnerabilityAnalysis(summary)}
                     </div>
                 </div>
+                ${this.generateBackToTocButton()}
             </div>
 
             <!-- MITRE Analysis -->
-            <div class="page report-page">
+            <div id="mitre-analysis" class="page">
                 <div class="page-content">
                     <div class="content-wrapper">
                         ${generateMitreAnalysis(summary)}
                     </div>
                 </div>
+                ${this.generateBackToTocButton()}
             </div>
 
             <!-- Agent Details -->
-            ${summary.agentSummaries.map(agent => `
+            ${summary.agentSummaries.map((agent, index) => `
                 <!-- Agent: ${agent.name} -->
-                ${generateAgentDetails(agent)}
-            `).join('\n')}
-
-            <!-- Table of Contents -->
-            <div class="page report-page">
-                <div class="page-content">
-                    <div class="content-wrapper">
-                        <h2 class="content-section">Table of Contents</h2>
-                        <div class="content-section">
-                            <div class="toc-item">
-                                <span>Executive Summary</span>
-                                <span>Page 2</span>
-                            </div>
-                            <div class="toc-item">
-                                <span>Vulnerability Analysis</span>
-                                <span>Page 3</span>
-                            </div>
-                            <div class="toc-item">
-                                <span>MITRE ATT&CK Analysis</span>
-                                <span>Page 4</span>
-                            </div>
-                            <div class="section">
-                                <h3>Agent Details</h3>
-                                ${summary.agentSummaries.map((agent, index) => `
-                                <div class="toc-item">
-                                    <span>${agent.name}</span>
-                                    <span>Page ${5 + index}</span>
-                                </div>
-                                `).join('')}
-                            </div>
-                        </div>
+                <div id="agent-${index}" class="page new-agent-page">
+                    <div class="page-content">
+                        ${generateAgentDetails(agent)}
                     </div>
+                    ${this.generateBackToTocButton()}
                 </div>
-            </div>
+            `).join('\n')}
         </body>
         </html>`;
     }

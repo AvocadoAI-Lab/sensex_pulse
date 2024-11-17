@@ -29,6 +29,122 @@ body {
     min-height: 100vh;
 }
 
+/* Page structure */
+.page {
+    position: relative;
+    width: 794px;
+    min-height: 1123px;
+    padding: 48px;
+}
+
+.page-content {
+    position: relative;
+    min-height: calc(1123px - 96px); /* Full height minus padding */
+}
+
+/* Back to TOC button */
+.back-to-toc {
+    position: fixed;
+    bottom: 48px;
+    right: 48px;
+    width: 40px;
+    height: 40px;
+    background: #1e40af;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.back-to-toc:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.back-to-toc svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Table of Contents styles */
+.toc-container {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin: 48px;
+}
+
+.toc-header {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1e40af;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.toc-section {
+    margin-bottom: 32px;
+}
+
+.toc-section:last-child {
+    margin-bottom: 0;
+}
+
+.toc-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.toc-item:hover {
+    background: #f8fafc;
+}
+
+.toc-item a {
+    color: #1f2937;
+    text-decoration: none;
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+}
+
+.toc-item a:hover {
+    color: #2563eb;
+}
+
+.toc-item .page-number {
+    color: #6b7280;
+    margin-left: 16px;
+    font-weight: 500;
+    background: #f1f5f9;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.toc-section h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #4b5563;
+    margin: 24px 0 16px;
+    padding-left: 16px;
+    border-left: 4px solid #2563eb;
+}
+
 /* Cover page */
 .cover-page {
     background: #1e40af;
@@ -403,10 +519,18 @@ body {
         break-inside: avoid;
         page-break-inside: avoid;
     }
+
+    .back-to-toc {
+        background: #1e40af !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
 }
 
 /* New agent page styles */
 .new-agent-page {
     break-before: page;
     page-break-before: always;
+    position: relative;
+    min-height: 1123px;
 }
