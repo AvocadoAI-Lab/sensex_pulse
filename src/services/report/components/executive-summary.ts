@@ -11,8 +11,8 @@ function calculateSecurityScore(summary: GroupSummary): SecurityScore {
     const criticalVulns = summary.criticalVulnerabilities.length;
     const severityDistribution = summary.overallSeverityDistribution;
     
-    const highSeverityAlerts = severityDistribution[12] || 0 + (severityDistribution[15] || 0);
-    const mediumSeverityAlerts = severityDistribution[8] || 0 + (severityDistribution[10] || 0);
+    const highSeverityAlerts = severityDistribution[12] || (severityDistribution[15] || 0);
+    const mediumSeverityAlerts = severityDistribution[8] || (severityDistribution[10] || 0);
     
     let score = 100;
     score -= (criticalVulns * 10);
@@ -60,7 +60,7 @@ function calculateSecurityScore(summary: GroupSummary): SecurityScore {
 
 export function generateExecutiveSummary(summary: GroupSummary): string {
     const securityScore = calculateSecurityScore(summary);
-    const highSeverityCount = summary.overallSeverityDistribution[12] || 0 + (summary.overallSeverityDistribution[15] || 0);
+    const highSeverityCount = summary.overallSeverityDistribution[12] || (summary.overallSeverityDistribution[15] || 0);
     const tacticsCovered = Object.keys(summary.mitreCoverage.tactics).length;
     
     return `

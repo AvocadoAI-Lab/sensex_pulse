@@ -1,4 +1,4 @@
-import {Hit, Rule, Types3, Vulnerability} from '../../types/wql';
+import {Hit, Rule, Types3, Vulnerability} from '@/types/wql';
 
 export interface AgentSummary {
     id: string;

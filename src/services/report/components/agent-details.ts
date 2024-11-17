@@ -1,5 +1,5 @@
 import {AgentSummary} from '../summary';
-import type {Hit} from '../../../types/wql';
+import type {Hit} from '@/types/wql';
 
 function generateAlertTimeline(alerts: Hit[]): string {
     const alertsPerGroup = 5; // Show 5 alerts per group

@@ -13,8 +13,6 @@ export class ReportPdfService {
     private static readonly MM_TO_PIXELS = this.DPI / 25.4;
     private static readonly PAGE_WIDTH = Math.round(this.PAGE_WIDTH_MM * this.MM_TO_PIXELS);  // 2480 pixels
     private static readonly PAGE_HEIGHT = Math.round(this.PAGE_HEIGHT_MM * this.MM_TO_PIXELS); // 3508 pixels
-    private static readonly PAGE_PADDING = Math.round(15 * this.MM_TO_PIXELS);  // 15mm padding
-    private static readonly CONTENT_HEIGHT = this.PAGE_HEIGHT - (this.PAGE_PADDING * 2);
 
     public static async generatePdf(summary: GroupSummary, outputPath: string): Promise<void> {
         const browser: Browser = await puppeteer.launch({
