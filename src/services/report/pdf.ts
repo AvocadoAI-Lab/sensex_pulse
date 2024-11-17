@@ -41,26 +41,37 @@ export class ReportPdfService {
                     size: A4;
                     margin: 0;
                 }
-                body {
+                html {
                     width: ${this.PAGE_WIDTH}px !important;
+                    height: 100% !important;
                     margin: 0 !important;
                     padding: 0 !important;
+                }
+                body {
+                    width: ${this.PAGE_WIDTH}px !important;
+                    min-height: 100% !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
                 }
                 .page {
                     width: ${this.PAGE_WIDTH}px;
                     min-height: ${this.PAGE_HEIGHT}px;
                     position: relative;
                     overflow: hidden;
+                    page-break-after: always;
+                    break-after: page;
                 }
-                .report-page {
-                    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+                .page:last-child {
+                    page-break-after: avoid;
+                    break-after: avoid;
                 }
                 .cover-page {
-                    background: #1e40af;
-                }
-                .page-content {
-                    position: relative;
-                    min-height: ${this.PAGE_HEIGHT}px;
+                    background: #1e40af !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
                 }
                 @media print {
                     html, body {
@@ -70,23 +81,11 @@ export class ReportPdfService {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
-                    .page {
-                        page-break-after: always;
-                        break-after: page;
-                    }
-                    .page:last-child {
-                        page-break-after: avoid;
-                        break-after: avoid;
-                    }
-                    .report-page {
+                    body {
                         background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
                     }
                     .cover-page {
                         background: #1e40af !important;
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
                     }
                 }
             `;
@@ -109,7 +108,7 @@ export class ReportPdfService {
             // Wait for any animations to complete
             await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
-            // Handle progressive page breaks and ensure full-height backgrounds
+            // Handle progressive page breaks
             await this.handlePageLayout(page);
 
             // Generate PDF with specific settings
@@ -141,7 +140,7 @@ export class ReportPdfService {
         await page.evaluate((pageHeight) => {
             function createNewPage(content: HTMLElement): HTMLElement {
                 const newPage = document.createElement('div');
-                newPage.className = 'page report-page';
+                newPage.className = 'page';
                 
                 const pageContent = document.createElement('div');
                 pageContent.className = 'page-content';
@@ -203,15 +202,10 @@ export class ReportPdfService {
                 }
             });
 
-            // Ensure all pages have full height background
+            // Ensure all pages have proper height
             document.querySelectorAll('.page').forEach((page) => {
                 const element = page as HTMLElement;
                 element.style.minHeight = `${pageHeight}px`;
-                if (element.classList.contains('report-page')) {
-                    element.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
-                } else if (element.classList.contains('cover-page')) {
-                    element.style.background = '#1e40af';
-                }
             });
         }, this.PAGE_HEIGHT);
     }
