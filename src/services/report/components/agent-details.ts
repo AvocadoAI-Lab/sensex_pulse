@@ -2,51 +2,61 @@ import {AgentSummary} from '../summary';
 import {Hit} from '@/types/wql';
 
 function generateAlertTimeline(alerts: Hit[]): string {
-    return `
-    <div class="content-section">
-        <h4>Recent Alerts Timeline</h4>
-        <div class="alert-container">
-            ${alerts.map(alert => `
-            <div class="alert-item" style="
-                background: ${alert._source.rule.level >= 12 ? '#fee2e2' : 
-                           alert._source.rule.level >= 8 ? '#ffedd5' : 
-                           alert._source.rule.level >= 4 ? '#fef3c7' : '#f3f4f6'};
-            ">
-                <div class="alert-icon" style="
-                    color: ${alert._source.rule.level >= 12 ? '#dc2626' : 
-                           alert._source.rule.level >= 8 ? '#ea580c' : 
-                           alert._source.rule.level >= 4 ? '#ca8a04' : '#6b7280'};
+    // Process alerts in smaller groups
+    const alertsPerGroup = 5; // Show 5 alerts per group
+    const alertGroups = [];
+    
+    for (let i = 0; i < alerts.length; i += alertsPerGroup) {
+        const groupAlerts = alerts.slice(i, i + alertsPerGroup);
+        const groupHtml = `
+        <div class="content-section alert-section">
+            ${i === 0 ? '<h4>Recent Alerts Timeline</h4>' : ''}
+            <div class="alert-list">
+                ${groupAlerts.map(alert => `
+                <div class="alert-item" style="
+                    background: ${alert._source.rule.level >= 12 ? '#fee2e2' : 
+                               alert._source.rule.level >= 8 ? '#ffedd5' : 
+                               alert._source.rule.level >= 4 ? '#fef3c7' : '#f3f4f6'};
                 ">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                </div>
-                <div class="alert-content">
-                    <div class="alert-header">
-                        <span class="alert-description">${alert._source.rule.description}</span>
-                        <span class="alert-level" style="
-                            color: ${alert._source.rule.level >= 12 ? '#991b1b' : 
-                                   alert._source.rule.level >= 8 ? '#9a3412' : 
-                                   alert._source.rule.level >= 4 ? '#854d0e' : '#374151'};
-                        ">Level ${alert._source.rule.level}</span>
+                    <div class="alert-icon" style="
+                        color: ${alert._source.rule.level >= 12 ? '#dc2626' : 
+                               alert._source.rule.level >= 8 ? '#ea580c' : 
+                               alert._source.rule.level >= 4 ? '#ca8a04' : '#6b7280'};
+                    ">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
                     </div>
-                    <div class="alert-meta">
-                        <span>${new Date(alert._source.timestamp).toLocaleString()}</span>
-                        <span>Rule ID: ${alert._source.rule.id}</span>
+                    <div class="alert-content">
+                        <div class="alert-header">
+                            <span class="alert-description">${alert._source.rule.description}</span>
+                            <span class="alert-level" style="
+                                color: ${alert._source.rule.level >= 12 ? '#991b1b' : 
+                                       alert._source.rule.level >= 8 ? '#9a3412' : 
+                                       alert._source.rule.level >= 4 ? '#854d0e' : '#374151'};
+                            ">Level ${alert._source.rule.level}</span>
+                        </div>
+                        <div class="alert-meta">
+                            <span>${new Date(alert._source.timestamp).toLocaleString()}</span>
+                            <span>Rule ID: ${alert._source.rule.id}</span>
+                        </div>
                     </div>
                 </div>
+                `).join('')}
             </div>
-            `).join('')}
-        </div>
-    </div>`;
+        </div>`;
+        alertGroups.push(groupHtml);
+    }
+
+    return alertGroups.join('\n');
 }
 
 function generateRuleDistribution(agent: AgentSummary): string {
     return `
     <div class="content-section">
         <h4>Top Triggered Rules</h4>
-        <div class="rule-container">
+        <div class="rule-list">
             ${agent.topRules.map(rule => `
             <div class="rule-item">
                 <div class="rule-header">
@@ -144,22 +154,12 @@ export function generateAgentDetails(agent: AgentSummary): string {
             </div>
         </div>`;
 
-    const alertTimelineSection = generateAlertTimeline(agent.recentAlerts);
-    const ruleDistributionSection = generateRuleDistribution(agent);
-    const mitreOverviewSection = generateMitreOverview(agent);
-
     return `
     <div class="agent-details new-agent-page">
-        <div class="page report-page">
-            <div class="page-content">
-                <div class="content-wrapper">
-                    ${headerSection}
-                    ${metricsSection}
-                    ${alertTimelineSection}
-                    ${ruleDistributionSection}
-                    ${mitreOverviewSection}
-                </div>
-            </div>
-        </div>
+        ${headerSection}
+        ${metricsSection}
+        ${generateAlertTimeline(agent.recentAlerts)}
+        ${generateRuleDistribution(agent)}
+        ${generateMitreOverview(agent)}
     </div>`;
 }
