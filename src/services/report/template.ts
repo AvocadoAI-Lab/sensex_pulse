@@ -1,158 +1,62 @@
 import {GroupSummary} from './summary';
-import {generateHeader} from './components/header';
 import {generateExecutiveSummary} from './components/executive-summary';
 import {generateVulnerabilityAnalysis} from './components/vulnerability-analysis';
 import {generateMitreAnalysis} from './components/mitre-analysis';
 import {generateAgentDetails} from './components/agent-details';
+import fs from 'fs';
+import path from 'path';
 
 export class ReportTemplateService {
-    private static generateStyles(): string {
+    private static getReportStyles(): string {
+        const cssPath = path.join(process.cwd(), 'src/services/report/styles/report.css');
+        const css = fs.readFileSync(cssPath, 'utf8');
+        return `<style>${css}</style>`;
+    }
+
+    private static generateCoverPage(): string {
         return `
-        <style>
-            /* Reset and base styles */
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            
-            @page {
-                size: A4;
-                margin: 0;
-            }
-            
-            html, body {
-                width: 794px !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                font-family: system-ui, -apple-system, sans-serif;
-                line-height: 1.5;
-                color: #1f2937;
-                background-color: white;
-            }
-
-            /* Page container */
-            .page {
-                width: 794px;
-                min-height: 1123px;
-                position: relative;
-                background-color: white;
-            }
-
-            /* Content sections */
-            .content-section {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                margin-bottom: 24px;
-            }
-
-            /* Individual items */
-            .alert-item, .rule-item, .metric-item {
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-
-            /* Container styles */
-            .alert-container, .rule-container {
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-            }
-
-            /* Content container */
-            .content {
-                padding: 48px;
-            }
-
-            /* Print-specific styles */
-            @media print {
-                body {
-                    background-color: white;
-                }
-
-                * {
-                    -webkit-print-color-adjust: exact !important;
-                    print-color-adjust: exact !important;
-                }
-
-                /* Ensure backgrounds print */
-                .bg-gradient-to-br,
-                .bg-gradient-to-r {
-                    -webkit-print-color-adjust: exact !important;
-                    print-color-adjust: exact !important;
-                }
-            }
-
-            /* Table styles */
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                table-layout: fixed;
-                break-inside: avoid;
-                page-break-inside: avoid;
-            }
-
-            th, td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #e5e7eb;
-            }
-
-            th {
-                font-weight: 600;
-                background-color: #f9fafb;
-            }
-
-            /* Progress bars */
-            .progress-bar {
-                height: 8px;
-                border-radius: 4px;
-                background-color: #e5e7eb;
-                overflow: hidden;
-            }
-
-            .progress-bar-fill {
-                height: 100%;
-                border-radius: 4px;
-                transition: width 0.5s ease;
-            }
-
-            /* Section spacing */
-            .section + .section {
-                margin-top: 48px;
-            }
-
-            /* Ensure headings don't break from their content */
-            h1, h2, h3, h4, h5, h6 {
-                break-after: avoid;
-                page-break-after: avoid;
-            }
-
-            /* Cover page specific styles */
-            .cover-page {
-                height: 1123px;
-                break-after: page;
-                page-break-after: always;
-            }
-
-            /* Agent header styles */
-            .agent-header {
-                break-after: avoid;
-                page-break-after: avoid;
-            }
-
-            /* Metrics grid */
-            .agent-metrics {
-                break-inside: avoid;
-                page-break-inside: avoid;
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 24px;
-                margin-bottom: 48px;
-            }
-        </style>`;
+        <div class="logo">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#1e40af" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+        </div>
+        <div>
+            <h1>Security Analysis Report</h1>
+            <h2>Comprehensive Security Assessment</h2>
+            <div class="analysis-cards">
+                <div class="analysis-card">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                        </svg>
+                    </div>
+                    <h3>Threat Analysis</h3>
+                    <p>Comprehensive security assessment and risk evaluation</p>
+                </div>
+                <div class="analysis-card">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                        </svg>
+                    </div>
+                    <h3>Impact Analysis</h3>
+                    <p>Detailed evaluation of security incidents and vulnerabilities</p>
+                </div>
+                <div class="analysis-card">
+                    <div class="icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                        </svg>
+                    </div>
+                    <h3>Recommendations</h3>
+                    <p>Actionable insights and security improvement strategies</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div>Generated on<br>${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+            <div>Powered by<br>Sensex Analytics</div>
+        </div>`;
     }
 
     public static generateTemplate(summary: GroupSummary): string {
@@ -163,27 +67,39 @@ export class ReportTemplateService {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>${summary.groupName} Security Report</title>
-            ${this.generateStyles()}
+            ${this.getReportStyles()}
         </head>
         <body>
             <!-- Cover Page -->
             <div class="page cover-page">
-                ${generateHeader(summary.groupName)}
+                ${this.generateCoverPage()}
             </div>
 
             <!-- Executive Summary -->
-            <div class="page">
-                ${generateExecutiveSummary(summary)}
+            <div class="page report-page">
+                <div class="page-content">
+                    <div class="content-wrapper">
+                        ${generateExecutiveSummary(summary)}
+                    </div>
+                </div>
             </div>
 
             <!-- Vulnerability Analysis -->
-            <div class="page">
-                ${generateVulnerabilityAnalysis(summary)}
+            <div class="page report-page">
+                <div class="page-content">
+                    <div class="content-wrapper">
+                        ${generateVulnerabilityAnalysis(summary)}
+                    </div>
+                </div>
             </div>
 
             <!-- MITRE Analysis -->
-            <div class="page">
-                ${generateMitreAnalysis(summary)}
+            <div class="page report-page">
+                <div class="page-content">
+                    <div class="content-wrapper">
+                        ${generateMitreAnalysis(summary)}
+                    </div>
+                </div>
             </div>
 
             <!-- Agent Details -->
@@ -193,64 +109,29 @@ export class ReportTemplateService {
             `).join('\n')}
 
             <!-- Table of Contents -->
-            <div class="page">
-                <div class="content-section" style="padding: 48px; background: white;">
-                    <div style="max-width: 800px; margin: 0 auto;">
-                        <h2 style="font-size: 32px; font-weight: 700; color: #1f2937; margin-bottom: 48px;">
-                            Table of Contents
-                        </h2>
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <div style="
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                padding: 16px;
-                                background: #f9fafb;
-                                border-radius: 8px;
-                            ">
-                                <span style="font-size: 16px; font-weight: 500; color: #111827;">Executive Summary</span>
-                                <span style="color: #6b7280;">Page 2</span>
+            <div class="page report-page">
+                <div class="page-content">
+                    <div class="content-wrapper">
+                        <h2 class="content-section">Table of Contents</h2>
+                        <div class="content-section">
+                            <div class="toc-item">
+                                <span>Executive Summary</span>
+                                <span>Page 2</span>
                             </div>
-                            <div style="
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                padding: 16px;
-                                background: #f9fafb;
-                                border-radius: 8px;
-                            ">
-                                <span style="font-size: 16px; font-weight: 500; color: #111827;">Vulnerability Analysis</span>
-                                <span style="color: #6b7280;">Page 3</span>
+                            <div class="toc-item">
+                                <span>Vulnerability Analysis</span>
+                                <span>Page 3</span>
                             </div>
-                            <div style="
-                                display: flex;
-                                justify-content: space-between;
-                                align-items: center;
-                                padding: 16px;
-                                background: #f9fafb;
-                                border-radius: 8px;
-                            ">
-                                <span style="font-size: 16px; font-weight: 500; color: #111827;">MITRE ATT&CK Analysis</span>
-                                <span style="color: #6b7280;">Page 4</span>
+                            <div class="toc-item">
+                                <span>MITRE ATT&CK Analysis</span>
+                                <span>Page 4</span>
                             </div>
-                            <div class="section" style="margin-top: 24px;">
-                                <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px;">
-                                    Agent Details
-                                </h3>
+                            <div class="section">
+                                <h3>Agent Details</h3>
                                 ${summary.agentSummaries.map((agent, index) => `
-                                <div style="
-                                    display: flex;
-                                    justify-content: space-between;
-                                    align-items: center;
-                                    padding: 16px;
-                                    background: #f9fafb;
-                                    border-radius: 8px;
-                                    margin-bottom: 8px;
-                                ">
-                                    <span style="font-size: 16px; font-weight: 500; color: #111827;">
-                                        ${agent.name}
-                                    </span>
-                                    <span style="color: #6b7280;">Page ${5 + index}</span>
+                                <div class="toc-item">
+                                    <span>${agent.name}</span>
+                                    <span>Page ${5 + index}</span>
                                 </div>
                                 `).join('')}
                             </div>

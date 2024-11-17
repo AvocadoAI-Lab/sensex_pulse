@@ -50,31 +50,43 @@ export class ReportPdfService {
                     width: ${this.PAGE_WIDTH}px;
                     min-height: ${this.PAGE_HEIGHT}px;
                     position: relative;
-                    background-color: white;
+                    overflow: hidden;
                 }
-                .content-section {
-                    break-inside: avoid;
-                    page-break-inside: avoid;
+                .report-page {
+                    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
                 }
-                .alert-item, .rule-item, .metric-item {
-                    break-inside: avoid;
-                    page-break-inside: avoid;
+                .cover-page {
+                    background: #1e40af;
                 }
-                .new-agent-page {
-                    break-before: page;
-                    page-break-before: always;
+                .page-content {
+                    position: relative;
+                    min-height: ${this.PAGE_HEIGHT}px;
                 }
                 @media print {
                     html, body {
                         width: ${this.PAGE_WIDTH}px !important;
-                    }
-                    * {
+                        margin: 0 !important;
+                        padding: 0 !important;
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
-                    .new-agent-page {
-                        break-before: page;
-                        page-break-before: always;
+                    .page {
+                        page-break-after: always;
+                        break-after: page;
+                    }
+                    .page:last-child {
+                        page-break-after: avoid;
+                        break-after: avoid;
+                    }
+                    .report-page {
+                        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    .cover-page {
+                        background: #1e40af !important;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                 }
             `;
@@ -97,8 +109,8 @@ export class ReportPdfService {
             // Wait for any animations to complete
             await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
-            // Handle progressive page breaks
-            await this.handleProgressivePageBreaks(page);
+            // Handle progressive page breaks and ensure full-height backgrounds
+            await this.handlePageLayout(page);
 
             // Generate PDF with specific settings
             await page.pdf({
@@ -125,19 +137,20 @@ export class ReportPdfService {
         }
     }
 
-    private static async handleProgressivePageBreaks(page: Page): Promise<void> {
+    private static async handlePageLayout(page: Page): Promise<void> {
         await page.evaluate((pageHeight) => {
             function createNewPage(content: HTMLElement): HTMLElement {
                 const newPage = document.createElement('div');
-                newPage.className = 'page';
-                newPage.style.padding = '48px';
-                newPage.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+                newPage.className = 'page report-page';
+                
+                const pageContent = document.createElement('div');
+                pageContent.className = 'page-content';
                 
                 const container = document.createElement('div');
-                container.style.maxWidth = '800px';
-                container.style.margin = '0 auto';
+                container.className = 'content-wrapper';
                 
-                newPage.appendChild(container);
+                pageContent.appendChild(container);
+                newPage.appendChild(pageContent);
                 content.parentElement?.insertBefore(newPage, content.nextSibling);
                 return container;
             }
@@ -189,6 +202,17 @@ export class ReportPdfService {
                     handleContainer(section as HTMLElement, items);
                 }
             });
-        }, this.CONTENT_HEIGHT);
+
+            // Ensure all pages have full height background
+            document.querySelectorAll('.page').forEach((page) => {
+                const element = page as HTMLElement;
+                element.style.minHeight = `${pageHeight}px`;
+                if (element.classList.contains('report-page')) {
+                    element.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+                } else if (element.classList.contains('cover-page')) {
+                    element.style.background = '#1e40af';
+                }
+            });
+        }, this.PAGE_HEIGHT);
     }
 }
