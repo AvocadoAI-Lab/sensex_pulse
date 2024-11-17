@@ -4,15 +4,13 @@ import {GroupSummary} from './summary';
 import {ReportTemplateService} from './template';
 
 export class ReportPdfService {
-    // A4 dimensions in mm
     private static readonly PAGE_WIDTH_MM = 210;
     private static readonly PAGE_HEIGHT_MM = 297;
-    
-    // Convert mm to pixels at 300 DPI (300 pixels per inch, 1 inch = 25.4mm)
     private static readonly DPI = 300;
     private static readonly MM_TO_PIXELS = this.DPI / 25.4;
-    private static readonly PAGE_WIDTH = Math.round(this.PAGE_WIDTH_MM * this.MM_TO_PIXELS);  // 2480 pixels
-    private static readonly PAGE_HEIGHT = Math.round(this.PAGE_HEIGHT_MM * this.MM_TO_PIXELS); // 3508 pixels
+    private static readonly PAGE_WIDTH = Math.round(this.PAGE_WIDTH_MM * this.MM_TO_PIXELS);
+    private static readonly PAGE_HEIGHT = Math.round(this.PAGE_HEIGHT_MM * this.MM_TO_PIXELS);
+    private static readonly CONTENT_HEIGHT_MM = 277; // 保留 20mm 邊距
 
     public static async generatePdf(summary: GroupSummary, outputPath: string): Promise<void> {
         const browser: Browser = await puppeteer.launch({
@@ -29,47 +27,32 @@ export class ReportPdfService {
         
         try {
             const page = await browser.newPage();
-            
-            // Set viewport to A4 size at 300 DPI
             await page.setViewport({
                 width: this.PAGE_WIDTH,
                 height: this.PAGE_HEIGHT,
-                deviceScaleFactor: 3.125, // For 300 DPI (96 * 3.125 = 300)
+                deviceScaleFactor: 3.125,
                 isLandscape: false
             });
 
-            // Generate the template
             const html = ReportTemplateService.generateTemplate(summary);
-
-            // Add custom styles for PDF rendering
             const pdfStyles = `
                 @page {
                     size: A4;
                     margin: 0;
                 }
-                html {
+                html, body {
                     width: 210mm !important;
-                    height: 297mm !important;
-                    margin: 0 !important;
-                    padding: 0 !important;
-                }
-                body {
-                    width: 210mm !important;
-                    min-height: 297mm !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
-                    -webkit-font-smoothing: antialiased !important;
-                    -moz-osx-font-smoothing: grayscale !important;
-                    text-rendering: optimizeLegibility !important;
                 }
                 .page {
                     width: 210mm;
                     min-height: 297mm;
+                    padding: 10mm;
                     position: relative;
-                    overflow: hidden;
                     page-break-after: always;
                     break-after: page;
                 }
@@ -77,36 +60,29 @@ export class ReportPdfService {
                     page-break-after: avoid;
                     break-after: avoid;
                 }
+                .page-content {
+                    max-height: ${this.CONTENT_HEIGHT_MM}mm;
+                    overflow: hidden;
+                }
                 .cover-page {
                     background: #1e40af !important;
-                    -webkit-print-color-adjust: exact !important;
-                    print-color-adjust: exact !important;
+                    padding: 0 !important;
                 }
                 @media print {
                     html, body {
                         width: 210mm !important;
                         margin: 0 !important;
                         padding: 0 !important;
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
                     }
-                    body {
-                        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
-                    }
-                    .cover-page {
-                        background: #1e40af !important;
-                    }
-                    img, svg {
-                        image-rendering: high-quality;
+                    .page {
+                        break-after: page;
                     }
                 }
             `;
 
-            // Set content with custom styles
             await page.setContent(html);
             await page.addStyleTag({ content: pdfStyles });
 
-            // Wait for fonts to load
             await page.evaluate(() => {
                 return new Promise<void>((resolve) => {
                     if (document.fonts && document.fonts.ready) {
@@ -117,13 +93,8 @@ export class ReportPdfService {
                 });
             });
 
-            // Wait for any animations to complete
-            await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
-
-            // Handle progressive page breaks
             await this.handlePageLayout(page);
 
-            // Generate PDF with enhanced settings for 300 DPI
             await page.pdf({
                 path: outputPath,
                 format: 'A4',
@@ -131,19 +102,19 @@ export class ReportPdfService {
                 preferCSSPageSize: true,
                 displayHeaderFooter: false,
                 margin: {
-                    top: '0',
-                    right: '0',
-                    bottom: '0',
-                    left: '0'
+                    top: '10mm',
+                    right: '10mm',
+                    bottom: '10mm',
+                    left: '10mm'
                 },
                 scale: 1,
-                timeout: 60000, // Increased timeout for high-quality rendering
+                timeout: 60000,
                 omitBackground: false,
                 landscape: false,
-                pageRanges: '', // All pages
+                pageRanges: '',
                 width: '210mm',
                 height: '297mm',
-                tagged: true // Enable PDF tagging for accessibility
+                tagged: true
             });
 
         } catch (error) {
@@ -155,76 +126,62 @@ export class ReportPdfService {
     }
 
     private static async handlePageLayout(page: Page): Promise<void> {
-        await page.evaluate((pageHeight) => {
-            function createNewPage(content: HTMLElement): HTMLElement {
+        await page.evaluate(() => {
+            const contentHeight = 277 * 3.779527559; // 277mm in pixels at 96 DPI
+
+            function createNewPage(element: Element): HTMLElement {
                 const newPage = document.createElement('div');
                 newPage.className = 'page';
-                
                 const pageContent = document.createElement('div');
                 pageContent.className = 'page-content';
-                
-                const container = document.createElement('div');
-                container.className = 'content-wrapper';
-                
-                pageContent.appendChild(container);
                 newPage.appendChild(pageContent);
-                content.parentElement?.insertBefore(newPage, content.nextSibling);
-                return container;
+                element.parentElement?.insertBefore(newPage, element.nextSibling);
+                return pageContent;
             }
 
-            function handleContainer(container: HTMLElement, items: NodeListOf<Element>) {
-                let currentPage = container;
-                let lastBottom = 0;
+            function processContent(container: Element) {
+                let currentHeight = 0;
+                let currentContainer = container;
 
-                items.forEach((item) => {
-                    const itemRect = (item as HTMLElement).getBoundingClientRect();
-                    const itemHeight = itemRect.height;
-                    const itemTop = itemRect.top;
-                    
-                    // If this item would overflow the page
-                    if (lastBottom > 0 && (itemTop + itemHeight - lastBottom) > pageHeight) {
-                        // Create a new page and move this and subsequent items to it
-                        currentPage = createNewPage(currentPage);
-                        currentPage.appendChild(item);
-                        lastBottom = itemTop + itemHeight;
+                Array.from(container.children).forEach((child) => {
+                    const element = child as HTMLElement;
+                    const elementHeight = element.offsetHeight;
+
+                    if (currentHeight + elementHeight > contentHeight) {
+                        // Create new page and move content
+                        currentContainer = createNewPage(currentContainer);
+                        currentContainer.appendChild(element);
+                        currentHeight = elementHeight;
                     } else {
-                        lastBottom = itemTop + itemHeight;
+                        currentHeight += elementHeight;
                     }
                 });
             }
 
+            // Process each major section
+            document.querySelectorAll('.report-page').forEach(section => {
+                processContent(section);
+            });
+
             // Ensure each agent starts on a new page
-            document.querySelectorAll('.new-agent-page').forEach((agentPage) => {
-                const element = agentPage as HTMLElement;
-                element.style.breakBefore = 'page';
-                element.style.pageBreakBefore = 'always';
-            });
-
-            // Handle alert items within each agent page
-            document.querySelectorAll('.alert-container').forEach(container => {
-                const items = container.querySelectorAll('.alert-item');
-                handleContainer(container as HTMLElement, items);
-            });
-
-            // Handle rule items within each agent page
-            document.querySelectorAll('.rule-container').forEach(container => {
-                const items = container.querySelectorAll('.rule-item');
-                handleContainer(container as HTMLElement, items);
-            });
-
-            // Handle metric items within each agent page
-            document.querySelectorAll('.content-section').forEach(section => {
-                const items = section.querySelectorAll('.metric-item');
-                if (items.length > 0) {
-                    handleContainer(section as HTMLElement, items);
+            document.querySelectorAll('[id^="agent-"]').forEach(agentSection => {
+                const prevElement = agentSection.previousElementSibling;
+                if (prevElement && !prevElement.classList.contains('page')) {
+                    const pageContent = createNewPage(agentSection);
+                    pageContent.appendChild(agentSection);
                 }
             });
 
-            // Ensure all pages have proper height
-            document.querySelectorAll('.page').forEach((page) => {
-                const element = page as HTMLElement;
-                element.style.minHeight = '297mm';
+            // Process individual components within each page
+            document.querySelectorAll('.page-content').forEach(pageContent => {
+                const components = pageContent.querySelectorAll('.metrics-grid, .alert-timeline, .rule-distribution, .mitre-overview');
+                components.forEach(component => {
+                    const htmlComponent = component as HTMLElement;
+                    if (htmlComponent.offsetHeight > contentHeight) {
+                        processContent(component);
+                    }
+                });
             });
-        }, this.PAGE_HEIGHT);
+        });
     }
 }
