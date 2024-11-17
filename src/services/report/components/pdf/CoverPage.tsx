@@ -5,24 +5,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 40,
-    backgroundColor: '#1e40af',
+    backgroundColor: '#1e293b', // Darker, more professional blue
     color: '#ffffff',
   },
+  gradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.1,
+  },
+  content: {
+    flex: 1,
+    position: 'relative',
+    zIndex: 1,
+  },
+  header: {
+    marginBottom: 60,
+  },
   logo: {
-    width: 48,
-    height: 48,
+    width: 64,
+    height: 64,
     marginBottom: 40,
   },
   title: {
-    fontSize: 36,
-    fontWeight: 700,
+    fontSize: 42,
+    fontFamily: 'Helvetica-Bold',
     marginBottom: 16,
+    color: '#ffffff',
   },
   subtitle: {
     fontSize: 24,
-    fontWeight: 500,
+    fontFamily: 'Helvetica',
     marginBottom: 60,
-    opacity: 0.9,
+    color: 'rgba(255, 255, 255, 0.9)',
   },
   cardsContainer: {
     flexDirection: 'row',
@@ -31,24 +48,28 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     padding: 24,
-    borderRadius: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   cardIcon: {
-    width: 32,
-    height: 32,
-    marginBottom: 16,
+    width: 40,
+    height: 40,
+    marginBottom: 20,
   },
   cardTitle: {
-    fontSize: 18,
-    fontWeight: 500,
-    marginBottom: 8,
+    fontSize: 20,
+    fontFamily: 'Helvetica-Bold',
+    marginBottom: 12,
+    color: '#ffffff',
   },
   cardDescription: {
     fontSize: 14,
-    opacity: 0.8,
-    lineHeight: 1.4,
+    fontFamily: 'Helvetica',
+    color: 'rgba(255, 255, 255, 0.8)',
+    lineHeight: 1.6,
   },
   footer: {
     position: 'absolute',
@@ -57,18 +78,32 @@ const styles = StyleSheet.create({
     right: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    color: '#ffffff',
-    opacity: 0.8,
+    alignItems: 'center',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
   footerText: {
     fontSize: 12,
-    lineHeight: 1.4,
+    fontFamily: 'Helvetica',
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  footerHighlight: {
+    color: '#ffffff',
+    fontFamily: 'Helvetica-Bold',
+  },
+  decorativeShape: {
+    position: 'absolute',
+    top: 40,
+    right: 40,
+    opacity: 0.1,
   },
 });
 
 const ShieldIcon = () => (
-  <Svg width="32" height="32" viewBox="0 0 24 24">
+  <Svg width="40" height="40" viewBox="0 0 24 24">
     <Path
+      fill="none"
       stroke="#ffffff"
       strokeWidth={2}
       strokeLinecap="round"
@@ -79,8 +114,9 @@ const ShieldIcon = () => (
 );
 
 const AlertIcon = () => (
-  <Svg width="32" height="32" viewBox="0 0 24 24">
+  <Svg width="40" height="40" viewBox="0 0 24 24">
     <Path
+      fill="none"
       stroke="#ffffff"
       strokeWidth={2}
       strokeLinecap="round"
@@ -90,26 +126,24 @@ const AlertIcon = () => (
   </Svg>
 );
 
-const ImpactIcon = () => (
-  <Svg width="32" height="32" viewBox="0 0 24 24">
+const ChartIcon = () => (
+  <Svg width="40" height="40" viewBox="0 0 24 24">
     <Path
+      fill="none"
       stroke="#ffffff"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+      d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
     />
   </Svg>
 );
 
-const RecommendationIcon = () => (
-  <Svg width="32" height="32" viewBox="0 0 24 24">
+const DecorativeShape = () => (
+  <Svg width="200" height="200" viewBox="0 0 200 200">
     <Path
-      stroke="#ffffff"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"
+      fill="#ffffff"
+      d="M100 0C44.8 0 0 44.8 0 100s44.8 100 100 100 100-44.8 100-100S155.2 0 100 0zm0 180c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z"
     />
   </Svg>
 );
@@ -123,53 +157,61 @@ export const CoverPage: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.logo}>
-        <ShieldIcon />
+      <View style={styles.decorativeShape}>
+        <DecorativeShape />
       </View>
       
-      <Text style={styles.title}>Security Analysis Report</Text>
-      <Text style={styles.subtitle}>Comprehensive Security Assessment</Text>
-
-      <View style={styles.cardsContainer}>
-        <View style={styles.card}>
-          <View style={styles.cardIcon}>
-            <AlertIcon />
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <View style={styles.logo}>
+            <ShieldIcon />
           </View>
-          <Text style={styles.cardTitle}>Threat Analysis</Text>
-          <Text style={styles.cardDescription}>
-            Comprehensive security assessment and risk evaluation
-          </Text>
+          
+          <Text style={styles.title}>Security Analysis Report</Text>
+          <Text style={styles.subtitle}>Comprehensive Security Assessment</Text>
         </View>
 
-        <View style={styles.card}>
-          <View style={styles.cardIcon}>
-            <ImpactIcon />
+        <View style={styles.cardsContainer}>
+          <View style={styles.card}>
+            <View style={styles.cardIcon}>
+              <AlertIcon />
+            </View>
+            <Text style={styles.cardTitle}>Threat Analysis</Text>
+            <Text style={styles.cardDescription}>
+              In-depth security assessment and vulnerability evaluation with CVSS scoring
+            </Text>
           </View>
-          <Text style={styles.cardTitle}>Impact Analysis</Text>
-          <Text style={styles.cardDescription}>
-            Detailed evaluation of security incidents and vulnerabilities
-          </Text>
-        </View>
 
-        <View style={styles.card}>
-          <View style={styles.cardIcon}>
-            <RecommendationIcon />
+          <View style={styles.card}>
+            <View style={styles.cardIcon}>
+              <ChartIcon />
+            </View>
+            <Text style={styles.cardTitle}>Impact Analysis</Text>
+            <Text style={styles.cardDescription}>
+              Comprehensive evaluation of security events and MITRE ATT&CK coverage
+            </Text>
           </View>
-          <Text style={styles.cardTitle}>Recommendations</Text>
-          <Text style={styles.cardDescription}>
-            Actionable insights and security improvement strategies
-          </Text>
+
+          <View style={styles.card}>
+            <View style={styles.cardIcon}>
+              <ShieldIcon />
+            </View>
+            <Text style={styles.cardTitle}>Recommendations</Text>
+            <Text style={styles.cardDescription}>
+              Strategic insights and actionable security improvement measures
+            </Text>
+          </View>
         </View>
       </View>
 
       <View style={styles.footer}>
         <View>
           <Text style={styles.footerText}>Generated on</Text>
-          <Text style={styles.footerText}>{date}</Text>
+          <Text style={styles.footerHighlight}>{date}</Text>
         </View>
         <View>
           <Text style={styles.footerText}>Powered by</Text>
-          <Text style={styles.footerText}>Sensex Analytics</Text>
+          <Text style={styles.footerHighlight}>Sensex Analytics</Text>
         </View>
       </View>
     </View>
