@@ -64,32 +64,35 @@ function calculateSecurityScore(summary: GroupSummary): SecurityScore {
     }
 }
 
-function generateScoreGauge(score: SecurityScore): string {
-    const rotation = (score.score / 100) * 180;
+function generateScoreDisplay(score: SecurityScore): string {
     return `
-    <div style="position: relative; width: 200px; height: 100px; margin: 0 auto;">
-        <!-- Score Display -->
+    <div style="text-align: center; padding: 20px;">
         <div style="
-            position: absolute;
-            bottom: 0;
+            font-size: 48px;
+            font-weight: 700;
+            color: ${score.color};
+            margin-bottom: 8px;
+        ">${score.score}</div>
+        <div style="
+            font-size: 18px;
+            color: ${score.color};
+            font-weight: 500;
+        ">${score.label}</div>
+        <div style="
             width: 100%;
-            text-align: center;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 16px;
         ">
-            <div style="font-size: 36px; font-weight: 700; color: ${score.color};">${score.score}</div>
-            <div style="font-size: 14px; color: #4b5563;">${score.label}</div>
+            <div style="
+                width: ${score.score}%;
+                height: 100%;
+                background: ${score.gradient};
+                border-radius: 4px;
+            "></div>
         </div>
-        <!-- Gauge Needle -->
-        <div style="
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 2px;
-            height: 60px;
-            background-color: #1f2937;
-            transform-origin: bottom;
-            transform: translateX(-50%) rotate(${rotation - 90}deg);
-            border-radius: 1px;
-        "></div>
     </div>`;
 }
 
@@ -251,44 +254,37 @@ export function generateExecutiveSummary(summary: GroupSummary): string {
                     border-radius: 12px;
                     padding: 24px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    border: 1px solid #e5e7eb;
                 ">
                     <h3 style="font-size: 16px; font-weight: 500; color: #6b7280; margin-bottom: 16px;">
                         Security Score
                     </h3>
-                    ${generateScoreGauge(securityScore)}
+                    ${generateScoreDisplay(securityScore)}
                 </div>
 
-                <!-- Monitored Agents -->
+                <!-- Agents Status -->
                 <div style="
                     background: white;
                     border-radius: 12px;
                     padding: 24px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    border: 1px solid #e5e7eb;
                 ">
                     <h3 style="font-size: 16px; font-weight: 500; color: #6b7280; margin-bottom: 16px;">
-                        Monitored Agents
+                        Agents Status
                     </h3>
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="text-align: center; padding: 20px;">
                         <div style="
-                            width: 48px;
-                            height: 48px;
-                            background: #dbeafe;
-                            border-radius: 8px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        ">
-                            <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 32px; font-weight: 700; color: #1f2937;">
-                                ${summary.totalAgents}
-                            </div>
-                            <div style="font-size: 14px; color: #6b7280;">Active agents</div>
-                        </div>
+                            font-size: 48px;
+                            font-weight: 700;
+                            color: #2563eb;
+                            margin-bottom: 8px;
+                        ">${summary.totalAgents}</div>
+                        <div style="
+                            font-size: 18px;
+                            color: #2563eb;
+                            font-weight: 500;
+                        ">Active Agents</div>
                     </div>
                 </div>
 
@@ -298,31 +294,23 @@ export function generateExecutiveSummary(summary: GroupSummary): string {
                     border-radius: 12px;
                     padding: 24px;
                     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    border: 1px solid #e5e7eb;
                 ">
                     <h3 style="font-size: 16px; font-weight: 500; color: #6b7280; margin-bottom: 16px;">
                         Total Alerts
                     </h3>
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="text-align: center; padding: 20px;">
                         <div style="
-                            width: 48px;
-                            height: 48px;
-                            background: #f5d0fe;
-                            border-radius: 8px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        ">
-                            <svg style="width: 24px; height: 24px; color: #c026d3;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                      d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 32px; font-weight: 700; color: #1f2937;">
-                                ${summary.totalAlerts}
-                            </div>
-                            <div style="font-size: 14px; color: #6b7280;">Security events</div>
-                        </div>
+                            font-size: 48px;
+                            font-weight: 700;
+                            color: #c026d3;
+                            margin-bottom: 8px;
+                        ">${summary.totalAlerts}</div>
+                        <div style="
+                            font-size: 18px;
+                            color: #c026d3;
+                            font-weight: 500;
+                        ">Security Events</div>
                     </div>
                 </div>
             </div>

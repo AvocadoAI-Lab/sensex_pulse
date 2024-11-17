@@ -1,229 +1,139 @@
 import {GroupSummary} from '../summary';
 
-interface MitreMetrics {
-    totalTactics: number;
-    totalTechniques: number;
-    topTactics: Array<{ name: string; count: number }>;
-    topTechniques: Array<{ name: string; count: number }>;
-    coverage: number;
-}
-
-const ENTERPRISE_TACTICS = [
-    'Initial Access',
-    'Execution',
-    'Persistence',
-    'Privilege Escalation',
-    'Defense Evasion',
-    'Credential Access',
-    'Discovery',
-    'Lateral Movement',
-    'Collection',
-    'Command and Control',
-    'Exfiltration',
-    'Impact'
-];
-
-function getColorIntensity(count: number, maxCount: number): string {
-    if (count === 0) return '#f3f4f6';
-    const intensity = Math.max(20, Math.round((count / maxCount) * 100));
-    if (intensity > 80) return '#4c1d95';
-    if (intensity > 60) return '#5b21b6';
-    if (intensity > 40) return '#6d28d9';
-    if (intensity > 20) return '#7c3aed';
-    return '#8b5cf6';
-}
-
-function getTextColor(bgColor: string): string {
-    return bgColor === '#f3f4f6' ? '#6b7280' : '#ffffff';
-}
-
-function analyzeMitreCoverage(summary: GroupSummary): MitreMetrics {
-    const { tactics, techniques } = summary.mitreCoverage;
+function generateCoverageDisplay(coverage: number): string {
+    const color = '#6d28d9';
     
-    const topTactics = Object.entries(tactics)
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
-
-    const topTechniques = Object.entries(techniques)
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count)
-        .slice(0, 5);
-
-    const coveredTactics = new Set(Object.keys(tactics));
-    const coveragePercentage = (coveredTactics.size / ENTERPRISE_TACTICS.length) * 100;
-
-    return {
-        totalTactics: Object.keys(tactics).length,
-        totalTechniques: Object.keys(techniques).length,
-        topTactics,
-        topTechniques,
-        coverage: Math.round(coveragePercentage)
-    };
-}
-
-function generateCoverageGauge(coverage: number): string {
-    const rotation = (coverage / 100) * 180;
-    const color = coverage >= 80 ? '#4c1d95' :
-                 coverage >= 60 ? '#6d28d9' :
-                 coverage >= 40 ? '#7c3aed' :
-                 '#8b5cf6';
-
     return `
-    <div style="position: relative; width: 200px; height: 100px; margin: 0 auto;">
-        <!-- Score Display -->
+    <div style="text-align: center; padding: 20px;">
         <div style="
-            position: absolute;
-            bottom: 0;
+            font-size: 48px;
+            font-weight: 700;
+            color: ${color};
+            margin-bottom: 8px;
+        ">${coverage}%</div>
+        <div style="
+            font-size: 18px;
+            color: ${color};
+            font-weight: 500;
+        ">Framework Coverage</div>
+        <div style="
             width: 100%;
-            text-align: center;
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 16px;
         ">
-            <div style="font-size: 36px; font-weight: 700; color: ${color};">${coverage}%</div>
-            <div style="font-size: 14px; color: #4b5563;">Framework Coverage</div>
+            <div style="
+                width: ${coverage}%;
+                height: 100%;
+                background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+                border-radius: 4px;
+            "></div>
         </div>
-        <!-- Gauge Needle -->
-        <div style="
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 2px;
-            height: 60px;
-            background-color: ${color};
-            transform-origin: bottom;
-            transform: translateX(-50%) rotate(${rotation - 90}deg);
-            border-radius: 1px;
-        "></div>
     </div>`;
 }
 
-function generateTacticsHeatmap(tactics: { [key: string]: number }): string {
+function generateMetricDisplay(value: number, label: string): string {
+    return `
+    <div style="text-align: center; padding: 20px;">
+        <div style="
+            font-size: 48px;
+            font-weight: 700;
+            color: #6d28d9;
+            margin-bottom: 8px;
+        ">${value}</div>
+        <div style="
+            font-size: 18px;
+            color: #6d28d9;
+            font-weight: 500;
+        ">${label}</div>
+    </div>`;
+}
+
+function generateTacticsTable(tactics: { [key: string]: number }): string {
     const maxCount = Math.max(...Object.values(tactics));
-    
-    return `
-    <div style="
-        background: white;
-        border-radius: 12px;
-        padding: 24px;
-        border: 1px solid #e5e7eb;
-    ">
-        <h4 style="font-size: 18px; font-weight: 500; color: #111827; margin-bottom: 24px;">
-            Tactics Coverage Heatmap
-        </h4>
-        <div style="
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-        ">
-            ${ENTERPRISE_TACTICS.map(tactic => {
-                const count = tactics[tactic] || 0;
-                const bgColor = getColorIntensity(count, maxCount);
-                const textColor = getTextColor(bgColor);
-                return `
-                <div style="
-                    background: ${bgColor};
-                    border-radius: 12px;
-                    padding: 16px;
-                    transition: all 0.2s;
-                ">
-                    <div style="font-size: 14px; font-weight: 500; color: ${textColor};">${tactic}</div>
+    const entries = Object.entries(tactics)
+        .sort((a, b) => b[1] - a[1])
+        .map(([tactic, count]) => {
+            const percentage = Math.round((count / maxCount) * 100);
+            return `
+            <tr>
+                <td style="font-weight: 500; padding: 12px 0;">${tactic}</td>
+                <td style="width: 100px; text-align: right; padding: 12px 0;">${count} alerts</td>
+                <td style="width: 200px; padding: 12px 0 12px 24px;">
                     <div style="
-                        display: flex;
-                        justify-content: space-between;
-                        align-items: center;
-                        margin-top: 8px;
+                        width: 100%;
+                        height: 8px;
+                        background: #f3f4f6;
+                        border-radius: 4px;
+                        overflow: hidden;
                     ">
-                        <span style="font-size: 12px; color: ${textColor}; opacity: 0.8;">
-                            ${count} alerts
-                        </span>
-                        ${count > 0 ? `
                         <div style="
-                            width: 8px;
-                            height: 8px;
+                            width: ${percentage}%;
+                            height: 100%;
+                            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
                             border-radius: 4px;
-                            background: currentColor;
-                            opacity: 0.6;
-                        "></div>` : ''}
+                        "></div>
                     </div>
-                </div>`;
-            }).join('')}
-        </div>
+                </td>
+            </tr>`;
+        });
+
+    return `
+    <div style="margin-top: 16px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tbody>
+                ${entries.join('')}
+            </tbody>
+        </table>
     </div>`;
 }
 
-function generateTechniquesChart(techniques: Array<{ name: string; count: number }>): string {
-    const maxCount = Math.max(...techniques.map(t => t.count));
-    
-    return `
-    <div style="
-        background: white;
-        border-radius: 12px;
-        padding: 24px;
-        border: 1px solid #e5e7eb;
-    ">
-        <h4 style="font-size: 18px; font-weight: 500; color: #111827; margin-bottom: 24px;">
-            Most Detected Techniques
-        </h4>
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-            ${techniques.map(technique => `
-            <div>
-                <div style="
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 8px;
-                ">
+function generateTechniquesTable(techniques: { [key: string]: number }): string {
+    const maxCount = Math.max(...Object.values(techniques));
+    const entries = Object.entries(techniques)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5)
+        .map(([technique, count]) => {
+            const percentage = Math.round((count / maxCount) * 100);
+            return `
+            <tr>
+                <td style="font-weight: 500; padding: 12px 0;">${technique}</td>
+                <td style="width: 100px; text-align: right; padding: 12px 0;">${count} detections</td>
+                <td style="width: 200px; padding: 12px 0 12px 24px;">
                     <div style="
-                        width: 32px;
-                        height: 32px;
-                        background: #f5f3ff;
-                        border-radius: 8px;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        margin-right: 12px;
+                        width: 100%;
+                        height: 8px;
+                        background: #f3f4f6;
+                        border-radius: 4px;
+                        overflow: hidden;
                     ">
-                        <svg style="width: 16px; height: 16px; color: #6d28d9;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                  d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <div style="flex-grow: 1;">
                         <div style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                        ">
-                            <span style="font-size: 14px; font-weight: 500; color: #111827;">
-                                ${technique.name}
-                            </span>
-                            <span style="font-size: 14px; color: #6b7280;">
-                                ${technique.count} detections
-                            </span>
-                        </div>
-                        <div style="
-                            height: 6px;
-                            background: #f3f4f6;
-                            border-radius: 3px;
-                            margin-top: 8px;
-                            overflow: hidden;
-                        ">
-                            <div style="
-                                height: 100%;
-                                width: ${(technique.count / maxCount) * 100}%;
-                                background: linear-gradient(90deg, #6d28d9, #4c1d95);
-                                border-radius: 3px;
-                                transition: width 0.3s ease;
-                            "></div>
-                        </div>
+                            width: ${percentage}%;
+                            height: 100%;
+                            background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
+                            border-radius: 4px;
+                        "></div>
                     </div>
-                </div>
-            </div>
-            `).join('')}
-        </div>
+                </td>
+            </tr>`;
+        });
+
+    return `
+    <div style="margin-top: 16px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tbody>
+                ${entries.join('')}
+            </tbody>
+        </table>
     </div>`;
 }
 
 export function generateMitreAnalysis(summary: GroupSummary): string {
-    const metrics = analyzeMitreCoverage(summary);
+    const coverage = Math.round((Object.keys(summary.mitreCoverage.tactics).length / 12) * 100);
+    const tacticsCount = Object.keys(summary.mitreCoverage.tactics).length;
+    const techniquesCount = Object.keys(summary.mitreCoverage.techniques).length;
     
     return `
     <div style="padding: 48px; height: 100%; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
@@ -255,85 +165,81 @@ export function generateMitreAnalysis(summary: GroupSummary): string {
                 gap: 24px;
                 margin-bottom: 48px;
             ">
+                <!-- Framework Coverage -->
                 <div style="
                     background: white;
                     border-radius: 12px;
                     padding: 24px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     border: 1px solid #e5e7eb;
                 ">
-                    <h3 style="font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 16px;">
+                    <h3 style="font-size: 16px; font-weight: 500; color: #6b7280; margin-bottom: 16px;">
                         Framework Coverage
                     </h3>
-                    ${generateCoverageGauge(metrics.coverage)}
+                    ${generateCoverageDisplay(coverage)}
                 </div>
 
+                <!-- Tactics Monitored -->
                 <div style="
                     background: white;
                     border-radius: 12px;
                     padding: 24px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     border: 1px solid #e5e7eb;
                 ">
-                    <div style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                    ">
-                        <h3 style="font-size: 14px; font-weight: 500; color: #6b7280;">Tactics Monitored</h3>
-                        <div style="
-                            width: 48px;
-                            height: 48px;
-                            background: #f5f3ff;
-                            border-radius: 8px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        ">
-                            <span style="font-size: 24px; font-weight: 700; color: #6d28d9;">
-                                ${metrics.totalTactics}
-                            </span>
-                        </div>
-                    </div>
-                    <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">
-                        of ${ENTERPRISE_TACTICS.length} total tactics covered
-                    </p>
+                    <h3 style="font-size: 16px; font-weight: 500; color: #6b7280; margin-bottom: 16px;">
+                        Tactics Monitored
+                    </h3>
+                    ${generateMetricDisplay(tacticsCount, 'of 12 Total Tactics')}
                 </div>
 
+                <!-- Techniques Detected -->
                 <div style="
                     background: white;
                     border-radius: 12px;
                     padding: 24px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
                     border: 1px solid #e5e7eb;
                 ">
-                    <div style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: space-between;
-                    ">
-                        <h3 style="font-size: 14px; font-weight: 500; color: #6b7280;">Techniques Detected</h3>
-                        <div style="
-                            width: 48px;
-                            height: 48px;
-                            background: #f5f3ff;
-                            border-radius: 8px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        ">
-                            <span style="font-size: 24px; font-weight: 700; color: #6d28d9;">
-                                ${metrics.totalTechniques}
-                            </span>
-                        </div>
-                    </div>
-                    <p style="font-size: 14px; color: #6b7280; margin-top: 8px;">
-                        unique techniques identified
-                    </p>
+                    <h3 style="font-size: 16px; font-weight: 500; color: #6b7280; margin-bottom: 16px;">
+                        Techniques Detected
+                    </h3>
+                    ${generateMetricDisplay(techniquesCount, 'Unique Techniques')}
                 </div>
             </div>
 
-            ${generateTacticsHeatmap(summary.mitreCoverage.tactics)}
+            <!-- Detailed Analysis -->
+            <div style="
+                display: grid;
+                gap: 24px;
+            ">
+                <!-- Tactics Coverage -->
+                <div style="
+                    background: white;
+                    border-radius: 12px;
+                    padding: 24px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    border: 1px solid #e5e7eb;
+                ">
+                    <h4 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">
+                        Tactics Coverage
+                    </h4>
+                    ${generateTacticsTable(summary.mitreCoverage.tactics)}
+                </div>
 
-            <div style="margin-top: 48px;">
-                ${generateTechniquesChart(metrics.topTechniques)}
+                <!-- Most Detected Techniques -->
+                <div style="
+                    background: white;
+                    border-radius: 12px;
+                    padding: 24px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                    border: 1px solid #e5e7eb;
+                ">
+                    <h4 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">
+                        Most Detected Techniques
+                    </h4>
+                    ${generateTechniquesTable(summary.mitreCoverage.techniques)}
+                </div>
             </div>
         </div>
     </div>`;

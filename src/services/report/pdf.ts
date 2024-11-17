@@ -9,8 +9,6 @@ export class ReportPdfService {
     private static readonly PAGE_HEIGHT = 1123; // 297mm
 
     public static async generatePdf(summary: GroupSummary, outputPath: string): Promise<void> {
-        const html = ReportTemplateService.generateTemplate(summary);
-        
         const browser: Browser = await puppeteer.launch({
             headless: true,
             args: [
@@ -31,6 +29,9 @@ export class ReportPdfService {
                 deviceScaleFactor: 2, // Higher resolution
                 isLandscape: false
             });
+
+            // Generate the template
+            const html = ReportTemplateService.generateTemplate(summary);
 
             // Add custom styles for PDF rendering
             const pdfStyles = `
@@ -132,12 +133,6 @@ export class ReportPdfService {
                 table.style.width = '100%';
             });
 
-            // Ensure images don't overflow
-            document.querySelectorAll('img').forEach((img) => {
-                img.style.maxWidth = '100%';
-                img.style.height = 'auto';
-            });
-
             // Fix flex layouts
             document.querySelectorAll('.flex').forEach((flex) => {
                 const element = flex as HTMLElement;
@@ -162,13 +157,6 @@ export class ReportPdfService {
             // Fix SVG rendering
             document.querySelectorAll('svg').forEach((svg) => {
                 svg.style.overflow = 'visible';
-            });
-
-            // Ensure proper chart rendering
-            document.querySelectorAll('[data-chart]').forEach((chart) => {
-                const element = chart as HTMLElement;
-                element.style.width = '100%';
-                element.style.maxHeight = '300px';
             });
         });
     }
