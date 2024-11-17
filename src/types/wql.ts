@@ -1,4 +1,4 @@
-export interface Types3 {
+export interface WQL_result {
     hits: Hits;
     _shards: Shards;
     timed_out: boolean;

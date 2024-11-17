@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {Types3} from '@/types/wql';
+import {WQL_result} from '@/types/wql';
 import {ReportSummaryService} from '@/services/report/summary';
 import {ReportPdfService} from '@/services/report/pdf';
 import path from 'path';
@@ -7,7 +7,7 @@ import fs from 'fs/promises';
 
 interface AgentResult {
     agent_name: string;
-    data: Types3;
+    data: WQL_result;
 }
 
 interface GroupResponse {

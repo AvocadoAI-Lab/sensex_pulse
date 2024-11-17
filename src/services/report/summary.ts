@@ -1,4 +1,4 @@
-import {Hit, Rule, Types3, Vulnerability} from '@/types/wql';
+import {Hit, Rule, Vulnerability, WQL_result} from '@/types/wql';
 
 export interface AgentSummary {
     id: string;
@@ -30,7 +30,7 @@ export interface GroupSummary {
 
 interface AgentResult {
     agent_name: string;
-    data: Types3;
+    data: WQL_result;
 }
 
 interface GroupResponse {
