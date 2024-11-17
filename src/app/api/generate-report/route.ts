@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {WQL_result} from '@/types/wql';
-import {ReportSummaryService} from '@/services/report/summary';
-import {ReportPdfService} from '@/services/report/pdf';
+import type {WQL_result} from '../../../types/wql';
+import {ReportSummaryService} from '../../../services/report/summary';
+import {ReportPdfRenderer} from '../../../services/report/pdf-renderer';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
         const filename = `${body.group_name.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.pdf`;
         const outputPath = path.join(reportsDir, filename);
 
-        // Generate PDF
-        await ReportPdfService.generatePdf(summary, outputPath);
+        // Generate PDF using React-PDF renderer
+        await ReportPdfRenderer.generatePdf(summary, outputPath);
 
         // Return the URL to download the PDF
         const pdfUrl = `/reports/${filename}`;
