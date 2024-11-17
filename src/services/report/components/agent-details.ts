@@ -2,7 +2,6 @@ import {AgentSummary} from '../summary';
 import type {Hit} from '@/types/wql';
 
 export function hasAgentData(agent: AgentSummary): boolean {
-    // Check if agent has any meaningful data
     const hasAlerts = agent.totalAlerts > 0 || 
                      (agent.severityDistribution[12] || 0) > 0 || 
                      (agent.severityDistribution[8] || 0) > 0;
@@ -80,32 +79,23 @@ function generateAlertTimeline(alerts: Hit[]): string | null {
         return null;
     }
 
+    const maxCount = Math.max(...alerts.map(alert => alert._source.rule.level));
+
     return `
     <h3 style="margin: 30px 0 20px; color: #1F2937;">Recent Alerts Timeline</h3>
     ${alerts.map(alert => `
-        <div style="
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            background: ${alert._source.rule.level >= 12 ? '#FEE2E2' : 
-                        alert._source.rule.level >= 8 ? '#FFEDD5' : 
-                        alert._source.rule.level >= 4 ? '#FEF3C7' : '#F3F4F6'};
-        ">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-weight: 500;">${alert._source.rule.description}</span>
-                <span style="
-                    padding: 4px 8px;
+        <div style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center;">
+            <div style="flex: 1;">${alert._source.rule.description}</div>
+            <div style="margin: 0 16px;">Level ${alert._source.rule.level}</div>
+            <div style="width: 120px; height: 8px; background: #F3F4F6; border-radius: 4px; overflow: hidden;">
+                <div style="
+                    width: ${(alert._source.rule.level / maxCount) * 100}%; 
+                    height: 100%; 
+                    background: ${alert._source.rule.level >= 12 ? '#DC2626' : 
+                                alert._source.rule.level >= 8 ? '#EA580C' : 
+                                '#6D28D9'}; 
                     border-radius: 4px;
-                    background: white;
-                    font-size: 12px;
-                    color: ${alert._source.rule.level >= 12 ? '#991B1B' : 
-                            alert._source.rule.level >= 8 ? '#9A3412' : 
-                            alert._source.rule.level >= 4 ? '#854D0E' : '#374151'};
-                ">Level ${alert._source.rule.level}</span>
-            </div>
-            <div style="display: flex; gap: 16px; font-size: 12px; color: #4B5563;">
-                <span>${new Date(alert._source.timestamp).toLocaleString()}</span>
-                <span>Rule ID: ${alert._source.rule.id}</span>
+                "></div>
             </div>
         </div>
     `).join('')}`;
@@ -119,24 +109,18 @@ function generateRuleDistribution(agent: AgentSummary): string | null {
     return `
     <h3 style="margin: 30px 0 20px; color: #1F2937;">Top Triggered Rules</h3>
     ${agent.topRules.map(rule => `
-        <div style="padding: 16px; margin-bottom: 12px; border: 1px solid #E5E7EB; border-radius: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="font-weight: 500;">${rule.description}</span>
-                <span style="
-                    padding: 4px 8px;
+        <div style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; display: flex; align-items: center;">
+            <div style="flex: 1;">${rule.description}</div>
+            <div style="margin: 0 16px;">Level ${rule.level}</div>
+            <div style="width: 120px; height: 8px; background: #F3F4F6; border-radius: 4px; overflow: hidden;">
+                <div style="
+                    width: 100%; 
+                    height: 100%; 
+                    background: ${rule.level >= 12 ? '#DC2626' : 
+                                rule.level >= 8 ? '#EA580C' : 
+                                '#6D28D9'}; 
                     border-radius: 4px;
-                    background: ${rule.level >= 12 ? '#FEE2E2' : 
-                                rule.level >= 8 ? '#FFEDD5' : 
-                                rule.level >= 4 ? '#FEF3C7' : '#F3F4F6'};
-                    font-size: 12px;
-                    color: ${rule.level >= 12 ? '#991B1B' : 
-                            rule.level >= 8 ? '#9A3412' : 
-                            rule.level >= 4 ? '#854D0E' : '#374151'};
-                ">Level ${rule.level}</span>
-            </div>
-            <div style="display: flex; gap: 16px; font-size: 12px; color: #4B5563;">
-                <span>Rule ID: ${rule.id}</span>
-                <span>Groups: ${rule.groups.join(', ')}</span>
+                "></div>
             </div>
         </div>
     `).join('')}`;
