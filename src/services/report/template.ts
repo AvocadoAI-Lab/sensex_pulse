@@ -36,21 +36,34 @@ export class ReportTemplateService {
             /* Page container */
             .page {
                 width: 794px;
-                height: 1123px;
-                overflow: hidden;
+                min-height: 1123px;
                 position: relative;
-                page-break-after: always;
                 background-color: white;
             }
 
-            .page:last-child {
-                page-break-after: avoid;
+            /* Content sections */
+            .content-section {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                margin-bottom: 24px;
+            }
+
+            /* Individual items */
+            .alert-item, .rule-item, .metric-item {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            /* Container styles */
+            .alert-container, .rule-container {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
             }
 
             /* Content container */
             .content {
                 padding: 48px;
-                height: 100%;
             }
 
             /* Print-specific styles */
@@ -59,21 +72,12 @@ export class ReportTemplateService {
                     background-color: white;
                 }
 
-                .page {
-                    break-after: page;
-                }
-
-                .no-break {
-                    break-inside: avoid;
-                }
-
-                /* Ensure backgrounds print */
                 * {
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
                 }
 
-                /* Gradient backgrounds */
+                /* Ensure backgrounds print */
                 .bg-gradient-to-br,
                 .bg-gradient-to-r {
                     -webkit-print-color-adjust: exact !important;
@@ -86,6 +90,8 @@ export class ReportTemplateService {
                 width: 100%;
                 border-collapse: collapse;
                 table-layout: fixed;
+                break-inside: avoid;
+                page-break-inside: avoid;
             }
 
             th, td {
@@ -112,6 +118,40 @@ export class ReportTemplateService {
                 border-radius: 4px;
                 transition: width 0.5s ease;
             }
+
+            /* Section spacing */
+            .section + .section {
+                margin-top: 48px;
+            }
+
+            /* Ensure headings don't break from their content */
+            h1, h2, h3, h4, h5, h6 {
+                break-after: avoid;
+                page-break-after: avoid;
+            }
+
+            /* Cover page specific styles */
+            .cover-page {
+                height: 1123px;
+                break-after: page;
+                page-break-after: always;
+            }
+
+            /* Agent header styles */
+            .agent-header {
+                break-after: avoid;
+                page-break-after: avoid;
+            }
+
+            /* Metrics grid */
+            .agent-metrics {
+                break-inside: avoid;
+                page-break-inside: avoid;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+                margin-bottom: 48px;
+            }
         </style>`;
     }
 
@@ -127,7 +167,7 @@ export class ReportTemplateService {
         </head>
         <body>
             <!-- Cover Page -->
-            <div class="page">
+            <div class="page cover-page">
                 ${generateHeader(summary.groupName)}
             </div>
 
@@ -154,7 +194,7 @@ export class ReportTemplateService {
 
             <!-- Table of Contents -->
             <div class="page">
-                <div style="padding: 48px; height: 100%; background: white;">
+                <div class="content-section" style="padding: 48px; background: white;">
                     <div style="max-width: 800px; margin: 0 auto;">
                         <h2 style="font-size: 32px; font-weight: 700; color: #1f2937; margin-bottom: 48px;">
                             Table of Contents
@@ -193,7 +233,7 @@ export class ReportTemplateService {
                                 <span style="font-size: 16px; font-weight: 500; color: #111827;">MITRE ATT&CK Analysis</span>
                                 <span style="color: #6b7280;">Page 4</span>
                             </div>
-                            <div style="margin-top: 24px;">
+                            <div class="section" style="margin-top: 24px;">
                                 <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 16px;">
                                     Agent Details
                                 </h3>

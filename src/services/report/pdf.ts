@@ -7,6 +7,8 @@ export class ReportPdfService {
     // A4 size in pixels at 96 DPI
     private static readonly PAGE_WIDTH = 794;  // 210mm
     private static readonly PAGE_HEIGHT = 1123; // 297mm
+    private static readonly PAGE_PADDING = 48;  // Padding inside pages
+    private static readonly CONTENT_HEIGHT = 1123 - (48 * 2); // Available content height
 
     public static async generatePdf(summary: GroupSummary, outputPath: string): Promise<void> {
         const browser: Browser = await puppeteer.launch({
@@ -41,28 +43,38 @@ export class ReportPdfService {
                 }
                 body {
                     width: ${this.PAGE_WIDTH}px !important;
-                    height: ${this.PAGE_HEIGHT}px !important;
                     margin: 0 !important;
                     padding: 0 !important;
                 }
                 .page {
                     width: ${this.PAGE_WIDTH}px;
-                    height: ${this.PAGE_HEIGHT}px;
-                    page-break-after: always;
+                    min-height: ${this.PAGE_HEIGHT}px;
                     position: relative;
-                    overflow: hidden;
+                    background-color: white;
                 }
-                .page:last-child {
-                    page-break-after: avoid;
+                .content-section {
+                    break-inside: avoid;
+                    page-break-inside: avoid;
+                }
+                .alert-item, .rule-item, .metric-item {
+                    break-inside: avoid;
+                    page-break-inside: avoid;
+                }
+                .new-agent-page {
+                    break-before: page;
+                    page-break-before: always;
                 }
                 @media print {
                     html, body {
                         width: ${this.PAGE_WIDTH}px !important;
-                        height: ${this.PAGE_HEIGHT}px !important;
                     }
                     * {
                         -webkit-print-color-adjust: exact !important;
                         print-color-adjust: exact !important;
+                    }
+                    .new-agent-page {
+                        break-before: page;
+                        page-break-before: always;
                     }
                 }
             `;
@@ -77,7 +89,6 @@ export class ReportPdfService {
                     if (document.fonts && document.fonts.ready) {
                         document.fonts.ready.then(() => resolve());
                     } else {
-                        // If document.fonts is not supported, wait a bit and resolve
                         setTimeout(resolve, 1000);
                     }
                 });
@@ -86,8 +97,8 @@ export class ReportPdfService {
             // Wait for any animations to complete
             await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 1000)));
 
-            // Ensure correct layout
-            await this.ensureCorrectLayout(page);
+            // Handle progressive page breaks
+            await this.handleProgressivePageBreaks(page);
 
             // Generate PDF with specific settings
             await page.pdf({
@@ -114,50 +125,70 @@ export class ReportPdfService {
         }
     }
 
-    private static async ensureCorrectLayout(page: Page): Promise<void> {
-        await page.evaluate(() => {
-            // Fix any layout issues
-            document.querySelectorAll('.page').forEach((pageElement) => {
-                const element = pageElement as HTMLElement;
-                // Ensure each page has correct dimensions
-                element.style.width = '794px';
-                element.style.height = '1123px';
-                element.style.overflow = 'hidden';
-                element.style.position = 'relative';
-                element.style.pageBreakAfter = 'always';
+    private static async handleProgressivePageBreaks(page: Page): Promise<void> {
+        await page.evaluate((pageHeight) => {
+            function createNewPage(content: HTMLElement): HTMLElement {
+                const newPage = document.createElement('div');
+                newPage.className = 'page';
+                newPage.style.padding = '48px';
+                newPage.style.background = 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)';
+                
+                const container = document.createElement('div');
+                container.style.maxWidth = '800px';
+                container.style.margin = '0 auto';
+                
+                newPage.appendChild(container);
+                content.parentElement?.insertBefore(newPage, content.nextSibling);
+                return container;
+            }
+
+            function handleContainer(container: HTMLElement, items: NodeListOf<Element>) {
+                let currentPage = container;
+                let lastBottom = 0;
+
+                items.forEach((item) => {
+                    const itemRect = (item as HTMLElement).getBoundingClientRect();
+                    const itemHeight = itemRect.height;
+                    const itemTop = itemRect.top;
+                    
+                    // If this item would overflow the page
+                    if (lastBottom > 0 && (itemTop + itemHeight - lastBottom) > pageHeight) {
+                        // Create a new page and move this and subsequent items to it
+                        currentPage = createNewPage(currentPage);
+                        currentPage.appendChild(item);
+                        lastBottom = itemTop + itemHeight;
+                    } else {
+                        lastBottom = itemTop + itemHeight;
+                    }
+                });
+            }
+
+            // Ensure each agent starts on a new page
+            document.querySelectorAll('.new-agent-page').forEach((agentPage) => {
+                const element = agentPage as HTMLElement;
+                element.style.breakBefore = 'page';
+                element.style.pageBreakBefore = 'always';
             });
 
-            // Fix table layouts
-            document.querySelectorAll('table').forEach((table) => {
-                table.style.tableLayout = 'fixed';
-                table.style.width = '100%';
+            // Handle alert items within each agent page
+            document.querySelectorAll('.alert-container').forEach(container => {
+                const items = container.querySelectorAll('.alert-item');
+                handleContainer(container as HTMLElement, items);
             });
 
-            // Fix flex layouts
-            document.querySelectorAll('.flex').forEach((flex) => {
-                const element = flex as HTMLElement;
-                element.style.display = 'flex';
-                element.style.flexWrap = 'wrap';
+            // Handle rule items within each agent page
+            document.querySelectorAll('.rule-container').forEach(container => {
+                const items = container.querySelectorAll('.rule-item');
+                handleContainer(container as HTMLElement, items);
             });
 
-            // Fix grid layouts
-            document.querySelectorAll('.grid').forEach((grid) => {
-                const element = grid as HTMLElement;
-                element.style.display = 'grid';
-                element.style.gridTemplateColumns = 'repeat(auto-fit, minmax(200px, 1fr))';
+            // Handle metric items within each agent page
+            document.querySelectorAll('.content-section').forEach(section => {
+                const items = section.querySelectorAll('.metric-item');
+                if (items.length > 0) {
+                    handleContainer(section as HTMLElement, items);
+                }
             });
-
-            // Ensure proper text wrapping
-            document.querySelectorAll('p, h1, h2, h3, h4, h5, h6').forEach((text) => {
-                const element = text as HTMLElement;
-                element.style.wordWrap = 'break-word';
-                element.style.overflowWrap = 'break-word';
-            });
-
-            // Fix SVG rendering
-            document.querySelectorAll('svg').forEach((svg) => {
-                svg.style.overflow = 'visible';
-            });
-        });
+        }, this.CONTENT_HEIGHT);
     }
 }

@@ -3,7 +3,7 @@ import {Hit} from '@/types/wql';
 
 function generateAlertTimeline(alerts: Hit[]): string {
     return `
-    <div style="
+    <div class="content-section" style="
         background: white;
         border-radius: 12px;
         padding: 24px;
@@ -13,9 +13,9 @@ function generateAlertTimeline(alerts: Hit[]): string {
         <h4 style="font-size: 18px; font-weight: 500; color: #111827; margin-bottom: 16px;">
             Recent Alerts Timeline
         </h4>
-        <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="alert-container" style="display: flex; flex-direction: column; gap: 16px;">
             ${alerts.map(alert => `
-            <div style="
+            <div class="alert-item" style="
                 display: flex;
                 align-items: flex-start;
                 padding: 16px;
@@ -98,7 +98,7 @@ function generateAlertTimeline(alerts: Hit[]): string {
 
 function generateRuleDistribution(agent: AgentSummary): string {
     return `
-    <div style="
+    <div class="content-section" style="
         background: white;
         border-radius: 12px;
         padding: 24px;
@@ -108,9 +108,9 @@ function generateRuleDistribution(agent: AgentSummary): string {
         <h4 style="font-size: 18px; font-weight: 500; color: #111827; margin-bottom: 16px;">
             Top Triggered Rules
         </h4>
-        <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="rule-container" style="display: flex; flex-direction: column; gap: 16px;">
             ${agent.topRules.map(rule => `
-            <div style="
+            <div class="rule-item" style="
                 padding: 16px;
                 border-radius: 8px;
                 background: #f9fafb;
@@ -162,7 +162,7 @@ function generateMitreOverview(agent: AgentSummary): string {
     const maxTechniqueCount = Math.max(...Object.values(techniques));
 
     return `
-    <div style="
+    <div class="content-section" style="
         background: white;
         border-radius: 12px;
         padding: 24px;
@@ -178,7 +178,7 @@ function generateMitreOverview(agent: AgentSummary): string {
                     Top Tactics
                 </h5>
                 ${Object.entries(tactics).slice(0, 5).map(([tactic, count]) => `
-                <div style="margin-bottom: 12px;">
+                <div class="metric-item" style="margin-bottom: 12px;">
                     <div style="
                         display: flex;
                         justify-content: space-between;
@@ -209,7 +209,7 @@ function generateMitreOverview(agent: AgentSummary): string {
                     Top Techniques
                 </h5>
                 ${Object.entries(techniques).slice(0, 5).map(([technique, count]) => `
-                <div style="margin-bottom: 12px;">
+                <div class="metric-item" style="margin-bottom: 12px;">
                     <div style="
                         display: flex;
                         justify-content: space-between;
@@ -240,98 +240,105 @@ function generateMitreOverview(agent: AgentSummary): string {
 }
 
 export function generateAgentDetails(agent: AgentSummary): string {
-    return `
-    <div class="page" style="padding: 48px; height: 100%; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
-        <div style="max-width: 800px; margin: 0 auto;">
-            <!-- Agent Header -->
+    // Generate header section
+    const headerSection = `
+        <div class="agent-header" style="
+            display: flex;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        ">
             <div style="
+                width: 64px;
+                height: 64px;
+                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                border-radius: 16px;
                 display: flex;
                 align-items: center;
-                margin-bottom: 48px;
-                padding-bottom: 24px;
-                border-bottom: 1px solid #e5e7eb;
+                justify-content: center;
+                margin-right: 24px;
             ">
-                <div style="
-                    width: 64px;
-                    height: 64px;
-                    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-                    border-radius: 16px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-right: 24px;
-                ">
-                    <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 style="font-size: 32px; font-weight: 700; color: #1f2937;">
-                        Agent: ${agent.name}
-                    </h2>
-                    <p style="font-size: 16px; color: #6b7280;">ID: ${agent.id}</p>
-                </div>
+                <svg style="width: 32px; height: 32px; color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
             </div>
+            <div>
+                <h2 style="font-size: 32px; font-weight: 700; color: #1f2937;">
+                    Agent: ${agent.name}
+                </h2>
+                <p style="font-size: 16px; color: #6b7280;">ID: ${agent.id}</p>
+            </div>
+        </div>`;
 
-            <!-- Agent Metrics -->
+    // Generate metrics section
+    const metricsSection = `
+        <div class="agent-metrics" style="
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 48px;
+        ">
             <div style="
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 24px;
-                margin-bottom: 48px;
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                border: 1px solid #e5e7eb;
             ">
-                <div style="
-                    background: white;
-                    border-radius: 12px;
-                    padding: 24px;
-                    border: 1px solid #e5e7eb;
-                ">
-                    <h3 style="font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 8px;">
-                        Total Alerts
-                    </h3>
-                    <p style="font-size: 32px; font-weight: 700; color: #1f2937;">
-                        ${agent.totalAlerts}
-                    </p>
-                </div>
-
-                <div style="
-                    background: white;
-                    border-radius: 12px;
-                    padding: 24px;
-                    border: 1px solid #e5e7eb;
-                ">
-                    <h3 style="font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 8px;">
-                        Critical Alerts
-                    </h3>
-                    <p style="font-size: 32px; font-weight: 700; color: #dc2626;">
-                        ${agent.severityDistribution[12] || 0}
-                    </p>
-                </div>
-
-                <div style="
-                    background: white;
-                    border-radius: 12px;
-                    padding: 24px;
-                    border: 1px solid #e5e7eb;
-                ">
-                    <h3 style="font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 8px;">
-                        High Alerts
-                    </h3>
-                    <p style="font-size: 32px; font-weight: 700; color: #ea580c;">
-                        ${agent.severityDistribution[8] || 0}
-                    </p>
-                </div>
+                <h3 style="font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 8px;">
+                    Total Alerts
+                </h3>
+                <p style="font-size: 32px; font-weight: 700; color: #1f2937;">
+                    ${agent.totalAlerts}
+                </p>
             </div>
 
-            <!-- Alert Timeline -->
-            ${generateAlertTimeline(agent.recentAlerts)}
+            <div style="
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                border: 1px solid #e5e7eb;
+            ">
+                <h3 style="font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 8px;">
+                    Critical Alerts
+                </h3>
+                <p style="font-size: 32px; font-weight: 700; color: #dc2626;">
+                    ${agent.severityDistribution[12] || 0}
+                </p>
+            </div>
 
-            <!-- Rule Distribution -->
-            ${generateRuleDistribution(agent)}
+            <div style="
+                background: white;
+                border-radius: 12px;
+                padding: 24px;
+                border: 1px solid #e5e7eb;
+            ">
+                <h3 style="font-size: 14px; font-weight: 500; color: #6b7280; margin-bottom: 8px;">
+                    High Alerts
+                </h3>
+                <p style="font-size: 32px; font-weight: 700; color: #ea580c;">
+                    ${agent.severityDistribution[8] || 0}
+                </p>
+            </div>
+        </div>`;
 
-            <!-- MITRE Overview -->
-            ${generateMitreOverview(agent)}
+    // Generate content sections
+    const alertTimelineSection = generateAlertTimeline(agent.recentAlerts);
+    const ruleDistributionSection = generateRuleDistribution(agent);
+    const mitreOverviewSection = generateMitreOverview(agent);
+
+    // Return the complete HTML with natural flow
+    return `
+    <div class="agent-details new-agent-page">
+        <div class="page" style="padding: 48px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+            <div style="max-width: 800px; margin: 0 auto;">
+                ${headerSection}
+                ${metricsSection}
+                ${alertTimelineSection}
+                ${ruleDistributionSection}
+                ${mitreOverviewSection}
+            </div>
         </div>
     </div>`;
 }
