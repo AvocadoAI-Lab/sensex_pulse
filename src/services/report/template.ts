@@ -2,7 +2,7 @@ import {GroupSummary} from './summary';
 import {generateExecutiveSummary} from './components/executive-summary';
 import {generateVulnerabilityAnalysis} from './components/vulnerability-analysis';
 import {generateMitreAnalysis} from './components/mitre-analysis';
-import {generateAgentDetails} from './components/agent-details';
+import {generateAgentDetails, hasAgentData} from './components/agent-details';
 import fs from 'fs';
 import path from 'path';
 
@@ -67,6 +67,9 @@ export class ReportTemplateService {
     }
 
     public static generateTemplate(summary: GroupSummary): string {
+        // Filter out agents with no data
+        const activeAgents = summary.agentSummaries.filter(agent => hasAgentData(agent));
+
         return `
         <!DOCTYPE html>
         <html lang="en">
@@ -105,9 +108,10 @@ export class ReportTemplateService {
                         </a>
                     </div>
                 </div>
+                ${activeAgents.length > 0 ? `
                 <div class="toc-section">
                     <h3>Agent Details</h3>
-                    ${summary.agentSummaries.map((agent, index) => `
+                    ${activeAgents.map((agent, index) => `
                     <div class="toc-item">
                         <a href="#agent-${index}">
                             <span>${agent.name}</span>
@@ -116,6 +120,7 @@ export class ReportTemplateService {
                     </div>
                     `).join('')}
                 </div>
+                ` : ''}
             </section>
 
             <!-- Executive Summary -->
@@ -137,7 +142,7 @@ export class ReportTemplateService {
             </section>
 
             <!-- Agent Details -->
-            ${summary.agentSummaries.map((agent, index) => `
+            ${activeAgents.map((agent, index) => `
                 <section id="agent-${index}" class="page report-page">
                     ${generateAgentDetails(agent)}
                     ${this.generateBackToTocButton()}

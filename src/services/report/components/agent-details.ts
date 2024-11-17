@@ -1,7 +1,30 @@
 import {AgentSummary} from '../summary';
 import type {Hit} from '@/types/wql';
 
-function generateMetricsGrid(agent: AgentSummary): string {
+export function hasAgentData(agent: AgentSummary): boolean {
+    // Check if agent has any meaningful data
+    const hasAlerts = agent.totalAlerts > 0 || 
+                     (agent.severityDistribution[12] || 0) > 0 || 
+                     (agent.severityDistribution[8] || 0) > 0;
+    const hasRecentAlerts = agent.recentAlerts && agent.recentAlerts.length > 0;
+    const hasTopRules = agent.topRules && agent.topRules.length > 0;
+    const hasMitreData = agent.mitreAttacks.tactics && 
+                        Object.keys(agent.mitreAttacks.tactics).length > 0 &&
+                        agent.mitreAttacks.techniques &&
+                        Object.keys(agent.mitreAttacks.techniques).length > 0;
+
+    return hasAlerts || hasRecentAlerts || hasTopRules || hasMitreData;
+}
+
+function generateMetricsGrid(agent: AgentSummary): string | null {
+    const totalAlerts = agent.totalAlerts;
+    const criticalAlerts = agent.severityDistribution[12] || 0;
+    const highAlerts = agent.severityDistribution[8] || 0;
+
+    if (totalAlerts === 0 && criticalAlerts === 0 && highAlerts === 0) {
+        return null;
+    }
+
     const metricBoxStyle = `
         background: white;
         padding: 16px;
@@ -34,27 +57,27 @@ function generateMetricsGrid(agent: AgentSummary): string {
     <div style="display: flex; gap: 16px; margin-bottom: 32px;">
         <div style="${metricBoxStyle}">
             <div style="${titleStyle}">TOTAL ALERTS</div>
-            <div style="${valueStyle}">${agent.totalAlerts}</div>
+            <div style="${valueStyle}">${totalAlerts}</div>
             <div style="${subtextStyle}">All Alerts</div>
         </div>
 
         <div style="${metricBoxStyle}">
             <div style="${titleStyle}">CRITICAL ALERTS</div>
-            <div style="${valueStyle}; color: #DC2626;">${agent.severityDistribution[12] || 0}</div>
+            <div style="${valueStyle}; color: #DC2626;">${criticalAlerts}</div>
             <div style="${subtextStyle}">Critical Issues</div>
         </div>
 
         <div style="${metricBoxStyle}">
             <div style="${titleStyle}">HIGH ALERTS</div>
-            <div style="${valueStyle}; color: #EA580C;">${agent.severityDistribution[8] || 0}</div>
+            <div style="${valueStyle}; color: #EA580C;">${highAlerts}</div>
             <div style="${subtextStyle}">High Issues</div>
         </div>
     </div>`;
 }
 
-function generateAlertTimeline(alerts: Hit[]): string {
-    if (alerts.length === 0) {
-        return `<div style="text-align: center; padding: 20px;">No recent alerts found.</div>`;
+function generateAlertTimeline(alerts: Hit[]): string | null {
+    if (!alerts || alerts.length === 0) {
+        return null;
     }
 
     return `
@@ -88,7 +111,11 @@ function generateAlertTimeline(alerts: Hit[]): string {
     `).join('')}`;
 }
 
-function generateRuleDistribution(agent: AgentSummary): string {
+function generateRuleDistribution(agent: AgentSummary): string | null {
+    if (!agent.topRules || agent.topRules.length === 0) {
+        return null;
+    }
+
     return `
     <h3 style="margin: 30px 0 20px; color: #1F2937;">Top Triggered Rules</h3>
     ${agent.topRules.map(rule => `
@@ -115,8 +142,13 @@ function generateRuleDistribution(agent: AgentSummary): string {
     `).join('')}`;
 }
 
-function generateMitreOverview(agent: AgentSummary): string {
+function generateMitreOverview(agent: AgentSummary): string | null {
     const { tactics, techniques } = agent.mitreAttacks;
+    
+    if (!tactics || Object.keys(tactics).length === 0 || !techniques || Object.keys(techniques).length === 0) {
+        return null;
+    }
+
     const maxTacticCount = Math.max(...Object.values(tactics));
     const maxTechniqueCount = Math.max(...Object.values(techniques));
 
@@ -151,7 +183,16 @@ function generateMitreOverview(agent: AgentSummary): string {
     </div>`;
 }
 
-export function generateAgentDetails(agent: AgentSummary): string {
+export function generateAgentDetails(agent: AgentSummary): string | null {
+    if (!hasAgentData(agent)) {
+        return null;
+    }
+
+    const metricsGrid = generateMetricsGrid(agent);
+    const alertTimeline = generateAlertTimeline(agent.recentAlerts);
+    const ruleDistribution = generateRuleDistribution(agent);
+    const mitreOverview = generateMitreOverview(agent);
+
     return `
     <div style="display: flex; align-items: center; margin-bottom: 24px;">
         <div style="
@@ -175,8 +216,8 @@ export function generateAgentDetails(agent: AgentSummary): string {
         </div>
     </div>
 
-    ${generateMetricsGrid(agent)}
-    ${generateAlertTimeline(agent.recentAlerts)}
-    ${generateRuleDistribution(agent)}
-    ${generateMitreOverview(agent)}`;
+    ${metricsGrid || ''}
+    ${alertTimeline || ''}
+    ${ruleDistribution || ''}
+    ${mitreOverview || ''}`;
 }
