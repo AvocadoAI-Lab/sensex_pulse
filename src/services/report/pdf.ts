@@ -4,11 +4,17 @@ import {GroupSummary} from './summary';
 import {ReportTemplateService} from './template';
 
 export class ReportPdfService {
-    // A4 size in pixels at 96 DPI
-    private static readonly PAGE_WIDTH = 794;  // 210mm
-    private static readonly PAGE_HEIGHT = 1123; // 297mm
-    private static readonly PAGE_PADDING = 48;  // Padding inside pages
-    private static readonly CONTENT_HEIGHT = 1123 - (48 * 2); // Available content height
+    // A4 dimensions in mm
+    private static readonly PAGE_WIDTH_MM = 210;
+    private static readonly PAGE_HEIGHT_MM = 297;
+    
+    // Convert mm to pixels at 300 DPI (300 pixels per inch, 1 inch = 25.4mm)
+    private static readonly DPI = 300;
+    private static readonly MM_TO_PIXELS = this.DPI / 25.4;
+    private static readonly PAGE_WIDTH = Math.round(this.PAGE_WIDTH_MM * this.MM_TO_PIXELS);  // 2480 pixels
+    private static readonly PAGE_HEIGHT = Math.round(this.PAGE_HEIGHT_MM * this.MM_TO_PIXELS); // 3508 pixels
+    private static readonly PAGE_PADDING = Math.round(15 * this.MM_TO_PIXELS);  // 15mm padding
+    private static readonly CONTENT_HEIGHT = this.PAGE_HEIGHT - (this.PAGE_PADDING * 2);
 
     public static async generatePdf(summary: GroupSummary, outputPath: string): Promise<void> {
         const browser: Browser = await puppeteer.launch({
@@ -17,18 +23,20 @@ export class ReportPdfService {
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 `--window-size=${this.PAGE_WIDTH},${this.PAGE_HEIGHT}`,
-                '--font-render-hinting=none'
+                '--font-render-hinting=medium',
+                '--disable-gpu',
+                '--force-device-scale-factor'
             ]
         });
         
         try {
             const page = await browser.newPage();
             
-            // Set viewport to A4 size
+            // Set viewport to A4 size at 300 DPI
             await page.setViewport({
                 width: this.PAGE_WIDTH,
                 height: this.PAGE_HEIGHT,
-                deviceScaleFactor: 2, // Higher resolution
+                deviceScaleFactor: 3.125, // For 300 DPI (96 * 3.125 = 300)
                 isLandscape: false
             });
 
@@ -42,23 +50,26 @@ export class ReportPdfService {
                     margin: 0;
                 }
                 html {
-                    width: ${this.PAGE_WIDTH}px !important;
-                    height: 100% !important;
+                    width: 210mm !important;
+                    height: 297mm !important;
                     margin: 0 !important;
                     padding: 0 !important;
                 }
                 body {
-                    width: ${this.PAGE_WIDTH}px !important;
-                    min-height: 100% !important;
+                    width: 210mm !important;
+                    min-height: 297mm !important;
                     margin: 0 !important;
                     padding: 0 !important;
                     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
                     -webkit-print-color-adjust: exact !important;
                     print-color-adjust: exact !important;
+                    -webkit-font-smoothing: antialiased !important;
+                    -moz-osx-font-smoothing: grayscale !important;
+                    text-rendering: optimizeLegibility !important;
                 }
                 .page {
-                    width: ${this.PAGE_WIDTH}px;
-                    min-height: ${this.PAGE_HEIGHT}px;
+                    width: 210mm;
+                    min-height: 297mm;
                     position: relative;
                     overflow: hidden;
                     page-break-after: always;
@@ -75,7 +86,7 @@ export class ReportPdfService {
                 }
                 @media print {
                     html, body {
-                        width: ${this.PAGE_WIDTH}px !important;
+                        width: 210mm !important;
                         margin: 0 !important;
                         padding: 0 !important;
                         -webkit-print-color-adjust: exact !important;
@@ -86,6 +97,9 @@ export class ReportPdfService {
                     }
                     .cover-page {
                         background: #1e40af !important;
+                    }
+                    img, svg {
+                        image-rendering: high-quality;
                     }
                 }
             `;
@@ -111,7 +125,7 @@ export class ReportPdfService {
             // Handle progressive page breaks
             await this.handlePageLayout(page);
 
-            // Generate PDF with specific settings
+            // Generate PDF with enhanced settings for 300 DPI
             await page.pdf({
                 path: outputPath,
                 format: 'A4',
@@ -125,7 +139,13 @@ export class ReportPdfService {
                     left: '0'
                 },
                 scale: 1,
-                timeout: 30000,
+                timeout: 60000, // Increased timeout for high-quality rendering
+                omitBackground: false,
+                landscape: false,
+                pageRanges: '', // All pages
+                width: '210mm',
+                height: '297mm',
+                tagged: true // Enable PDF tagging for accessibility
             });
 
         } catch (error) {
@@ -205,7 +225,7 @@ export class ReportPdfService {
             // Ensure all pages have proper height
             document.querySelectorAll('.page').forEach((page) => {
                 const element = page as HTMLElement;
-                element.style.minHeight = `${pageHeight}px`;
+                element.style.minHeight = '297mm';
             });
         }, this.PAGE_HEIGHT);
     }
