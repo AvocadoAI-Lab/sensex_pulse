@@ -36,18 +36,19 @@ body {
 .page {
     position: relative;
     width: 210mm;
-    height: 297mm;
+    min-height: 297mm;
     padding: 20mm;
     break-after: page;
     page-break-after: always;
     background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    overflow: hidden;
 }
 
 /* Back to TOC button */
 .back-to-toc {
     position: absolute;
-    bottom: 15mm;
-    right: 15mm;
+    bottom: 20mm;
+    right: 20mm;
     width: 10mm;
     height: 10mm;
     background: #1e40af;
@@ -58,6 +59,7 @@ body {
     color: white;
     text-decoration: none;
     box-shadow: 0 0.5mm 1mm rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
 .back-to-toc svg {
@@ -71,41 +73,43 @@ body {
     color: white;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    padding: 25mm;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    height: 297mm;
 }
 
 .cover-page .logo {
     width: 16mm;
     height: 16mm;
     background: white;
-    border-radius: 3mm;
+    border-radius: 4mm;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15mm;
+    margin-bottom: 16mm;
+}
+
+.cover-page .logo svg {
+    width: 10mm;
+    height: 10mm;
+    color: #1e40af;
 }
 
 .cover-page h1 {
-    font-size: 12mm;
+    font-size: 10mm;
     font-weight: 700;
     margin-bottom: 4mm;
+    text-align: center;
 }
 
 .cover-page h2 {
-    font-size: 6mm;
+    font-size: 5mm;
     font-weight: 500;
     opacity: 0.9;
-    margin-bottom: 15mm;
-}
-
-.cover-page .footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 3.5mm;
-    opacity: 0.9;
-    margin-top: auto;
+    margin-bottom: 20mm;
+    text-align: center;
 }
 
 /* Analysis cards on cover */
@@ -113,35 +117,57 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 6mm;
-    margin: 10mm 0;
+    width: 160mm;
+    margin: 0 auto;
 }
 
 .analysis-card {
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 4mm;
+    border-radius: 3mm;
     padding: 6mm;
+    text-align: center;
 }
 
 .analysis-card .icon {
     width: 12mm;
     height: 12mm;
-    border-radius: 3mm;
+    border-radius: 2mm;
     background: rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 4mm;
+    margin: 0 auto 4mm;
+}
+
+.analysis-card .icon svg {
+    width: 6mm;
+    height: 6mm;
 }
 
 .analysis-card h3 {
-    font-size: 5mm;
+    font-size: 4mm;
     font-weight: 600;
     margin-bottom: 2mm;
+    line-height: 1.2;
 }
 
 .analysis-card p {
-    font-size: 3.5mm;
+    font-size: 3mm;
     opacity: 0.9;
+    line-height: 1.4;
+}
+
+.cover-page .footer {
+    position: absolute;
+    bottom: 16mm;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 3mm;
+    opacity: 0.9;
+    padding: 0 20mm;
 }
 
 /* Table of Contents */
@@ -164,6 +190,15 @@ body {
 
 .toc-section:last-child {
     margin-bottom: 0;
+}
+
+.toc-section h3 {
+    font-size: 5mm;
+    font-weight: 600;
+    color: #4b5563;
+    margin: 8mm 0 6mm;
+    padding-left: 4mm;
+    border-left: 1mm solid #2563eb;
 }
 
 .toc-item {
@@ -190,18 +225,10 @@ body {
     font-size: 3.5mm;
 }
 
-.toc-section h3 {
-    font-size: 5mm;
-    font-weight: 600;
-    color: #4b5563;
-    margin: 8mm 0 6mm;
-    padding-left: 4mm;
-    border-left: 1mm solid #2563eb;
-}
-
 /* Report Pages */
 .report-page {
     padding: 25mm;
+    padding-bottom: 40mm; /* 為返回按鈕留出空間 */
 }
 
 .report-page h2 {
