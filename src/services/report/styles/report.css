@@ -229,36 +229,59 @@ body {
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 6mm;
+    gap: 4mm;
     margin-bottom: 15mm;
 }
 
 .metric-box {
     background: white;
     border-radius: 3mm;
-    padding: 6mm;
+    padding: 8mm;
     border: 0.25mm solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 32mm;
+    box-shadow: 0 1mm 2mm rgba(0, 0, 0, 0.05);
 }
 
 .metric-box h3 {
-    font-size: 3.5mm;
+    font-size: 4mm;
     font-weight: 500;
     color: #6b7280;
+    margin-bottom: 4mm;
+    text-transform: uppercase;
+    letter-spacing: 0.2mm;
+}
+
+.metric-box .metric-value {
+    font-size: 12mm;
+    font-weight: 700;
+    color: #1f2937;
+    line-height: 1;
     margin-bottom: 2mm;
 }
 
-.metric-box p {
-    font-size: 8mm;
-    font-weight: 700;
-    color: #1f2937;
+.metric-box .metric-subtext {
+    font-size: 4mm;
+    color: #4b5563;
+    font-weight: 500;
 }
 
-.metric-box p.critical {
+.metric-box.critical .metric-value {
     color: #dc2626;
 }
 
-.metric-box p.high {
+.metric-box.high .metric-value {
     color: #ea580c;
+}
+
+.metric-box.active .metric-value {
+    color: #2563eb;
+}
+
+.metric-box.events .metric-value {
+    color: #7c3aed;
 }
 
 /* Alert and Rule Lists */
