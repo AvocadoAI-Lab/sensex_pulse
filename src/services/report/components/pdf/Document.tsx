@@ -22,21 +22,22 @@ const styles = StyleSheet.create({
   pageContent: {
     flex: 1,
     padding: 16,
-    paddingTop: 40, // Space for header
-    paddingBottom: 60, // Space for footer
+    paddingTop: 64, // Increased from 40 to 64 to add more space below header
+    paddingBottom: 60, // Keep footer spacing the same
   },
   header: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 40,
+    height: 48, // Increased from 40 to 48 to make header slightly taller
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     borderBottom: 1,
     borderBottomColor: '#e2e8f0',
+    backgroundColor: '#ffffff', // Added to ensure header is visible
   },
   headerLeft: {
     flexDirection: 'row',
@@ -74,6 +75,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTop: 1,
     borderTopColor: '#e2e8f0',
+    backgroundColor: '#ffffff', // Added to ensure footer is visible
   },
   footerLeft: {
     flexDirection: 'row',

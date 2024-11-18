@@ -3,17 +3,7 @@ import {StyleSheet, Text, View} from '@react-pdf/renderer';
 import {GroupSummary} from '../../summary';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-    paddingHorizontal: 16,
-  },
-  header: {
-    fontSize: 22,
-    fontFamily: 'Helvetica-Bold',
-    marginBottom: 24,
-    color: '#1e293b',
-  },
+  // Remove header style since it's handled by Document.tsx
   section: {
     marginBottom: 24,
   },
@@ -90,15 +80,6 @@ const styles = StyleSheet.create({
   summaryHighlight: {
     fontFamily: 'Helvetica-Bold',
     color: '#2563eb',
-  },
-  decorativeLine: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    backgroundColor: '#2563eb',
-    borderRadius: 1.5,
   },
   statsGrid: {
     flexDirection: 'row',
@@ -265,10 +246,7 @@ export const MitreAnalysis: React.FC<MitreAnalysisProps> = ({ summary }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.decorativeLine} />
-      <Text style={styles.header}>MITRE ATT&CK Analysis</Text>
-
+    <>
       <View style={styles.summaryBox}>
         <Text style={styles.summaryText}>
           Security monitoring covers <Text style={styles.summaryHighlight}>{totalTactics} MITRE ATT&CK tactics</Text> and 
@@ -330,6 +308,6 @@ export const MitreAnalysis: React.FC<MitreAnalysisProps> = ({ summary }) => {
           <Text style={styles.noData}>No MITRE techniques detected</Text>
         )}
       </View>
-    </View>
+    </>
   );
 };

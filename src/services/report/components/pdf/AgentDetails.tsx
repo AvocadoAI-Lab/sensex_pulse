@@ -3,14 +3,7 @@ import {StyleSheet, Text, View} from '@react-pdf/renderer';
 import {AgentSummary} from '../../summary';
 import type {Rule} from '@/types/wql';
 
-// ... (keep all styles unchanged)
 const styles = StyleSheet.create({
-  header: {
-    fontSize: 22,
-    fontFamily: 'Helvetica-Bold',
-    marginBottom: 24,
-    color: '#1e293b',
-  },
   section: {
     marginBottom: 24,
   },

@@ -3,17 +3,7 @@ import {StyleSheet, Text, View} from '@react-pdf/renderer';
 import {GroupSummary} from '../../summary';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-    paddingHorizontal: 16,
-  },
-  header: {
-    fontSize: 22,
-    fontFamily: 'Helvetica-Bold',
-    marginBottom: 24,
-    color: '#1e293b',
-  },
+  // Remove header style since it's handled by Document.tsx
   metricsGrid: {
     flexDirection: 'row',
     gap: 16,
@@ -189,15 +179,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
     marginLeft: 4,
   },
-  decorativeLine: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    backgroundColor: '#2563eb',
-    borderRadius: 1.5,
-  },
 });
 
 const calculateSecurityScore = (summary: GroupSummary) => {
@@ -277,10 +258,7 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ summary }) =
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.decorativeLine} />
-      <Text style={styles.header}>Executive Summary</Text>
-
+    <>
       <View style={styles.summaryBox}>
         <Text style={styles.summaryText}>
           Security assessment across <Text style={styles.summaryHighlight}>{summary.totalAgents} agents</Text> reveals 
@@ -393,6 +371,6 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ summary }) =
           ))}
         </View>
       </View>
-    </View>
+    </>
   );
 };
