@@ -5,103 +5,124 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 40,
-    backgroundColor: '#1e293b', // Darker, more professional blue
+    backgroundColor: '#1e293b',
     color: '#ffffff',
-  },
-  gradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.1,
+    position: 'relative',
+    overflow: 'hidden',
   },
   content: {
     flex: 1,
     position: 'relative',
-    zIndex: 1,
+    zIndex: 2,
   },
   header: {
-    marginBottom: 60,
+    marginBottom: 80,
   },
   logo: {
-    width: 64,
-    height: 64,
+    width: 56,
+    height: 56,
     marginBottom: 40,
   },
   title: {
-    fontSize: 42,
+    fontSize: 48,
     fontFamily: 'Helvetica-Bold',
     marginBottom: 16,
     color: '#ffffff',
   },
   subtitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Helvetica',
-    marginBottom: 60,
     color: 'rgba(255, 255, 255, 0.9)',
+    lineHeight: 1.4,
   },
-  cardsContainer: {
+  mainContent: {
+    flex: 1,
+    marginBottom: 80,
+  },
+  infoGrid: {
     flexDirection: 'row',
     gap: 24,
-    marginBottom: 60,
+    marginBottom: 40,
   },
-  card: {
+  infoCard: {
     flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     padding: 24,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
+    position: 'relative',
+    overflow: 'hidden',
   },
   cardIcon: {
-    width: 40,
-    height: 40,
-    marginBottom: 20,
+    width: 32,
+    height: 32,
+    marginBottom: 16,
   },
   cardTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 12,
     color: '#ffffff',
+    marginBottom: 8,
   },
   cardDescription: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Helvetica',
     color: 'rgba(255, 255, 255, 0.8)',
-    lineHeight: 1.6,
+    lineHeight: 1.5,
   },
   footer: {
-    position: 'absolute',
-    bottom: 40,
-    left: 40,
-    right: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 20,
+    alignItems: 'flex-end',
+    paddingTop: 24,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
-  footerText: {
+  footerLeft: {
+    flex: 1,
+  },
+  footerRight: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  footerLabel: {
     fontSize: 12,
     fontFamily: 'Helvetica',
     color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: 4,
   },
-  footerHighlight: {
-    color: '#ffffff',
+  footerValue: {
+    fontSize: 14,
     fontFamily: 'Helvetica-Bold',
+    color: '#ffffff',
   },
-  decorativeShape: {
+  decorativeCircle: {
     position: 'absolute',
-    top: 40,
+    right: -150,
+    top: -150,
+    width: 400,
+    height: 400,
+    borderRadius: 200,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    zIndex: 1,
+  },
+  decorativeLine: {
+    position: 'absolute',
+    left: 40,
     right: 40,
-    opacity: 0.1,
+    bottom: 120,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    zIndex: 1,
+  },
+  brandHighlight: {
+    color: '#3b82f6',
   },
 });
 
 const ShieldIcon = () => (
-  <Svg width="40" height="40" viewBox="0 0 24 24">
+  <Svg width="32" height="32" viewBox="0 0 24 24">
     <Path
       fill="none"
       stroke="#ffffff"
@@ -113,37 +134,28 @@ const ShieldIcon = () => (
   </Svg>
 );
 
-const AlertIcon = () => (
-  <Svg width="40" height="40" viewBox="0 0 24 24">
-    <Path
-      fill="none"
-      stroke="#ffffff"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-    />
-  </Svg>
-);
-
 const ChartIcon = () => (
-  <Svg width="40" height="40" viewBox="0 0 24 24">
+  <Svg width="32" height="32" viewBox="0 0 24 24">
     <Path
       fill="none"
       stroke="#ffffff"
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
-      d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+      d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v7.5m3-9v10.5m-16.5-1.5h18c.621 0 1.125-.504 1.125-1.125V4.125C19.125 3.504 18.621 3 18 3H6c-.621 0-1.125.504-1.125 1.125v13.5c0 .621-.504 1.125-1.125 1.125H2.25c-.621 0-1.125-.504-1.125-1.125V4.125C1.125 3.504 1.629 3 2.25 3h1.5m16.5 0v2.25m-16.5-2.25v2.25m16.5 9.75v-2.25m-16.5 2.25v-2.25m16.5 0h-16.5"
     />
   </Svg>
 );
 
-const DecorativeShape = () => (
-  <Svg width="200" height="200" viewBox="0 0 200 200">
+const ShieldCheckIcon = () => (
+  <Svg width="32" height="32" viewBox="0 0 24 24">
     <Path
-      fill="#ffffff"
-      d="M100 0C44.8 0 0 44.8 0 100s44.8 100 100 100 100-44.8 100-100S155.2 0 100 0zm0 180c-44.2 0-80-35.8-80-80s35.8-80 80-80 80 35.8 80 80-35.8 80-80 80z"
+      fill="none"
+      stroke="#ffffff"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"
     />
   </Svg>
 );
@@ -157,9 +169,7 @@ export const CoverPage: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.decorativeShape}>
-        <DecorativeShape />
-      </View>
+      <View style={styles.decorativeCircle} />
       
       <View style={styles.content}>
         <View style={styles.header}>
@@ -167,51 +177,53 @@ export const CoverPage: React.FC = () => {
             <ShieldIcon />
           </View>
           
-          <Text style={styles.title}>Security Analysis Report</Text>
-          <Text style={styles.subtitle}>Comprehensive Security Assessment</Text>
+          <Text style={styles.title}>
+            Security Analysis{'\n'}
+            Report
+          </Text>
+          <Text style={styles.subtitle}>
+            Comprehensive Security Assessment{'\n'}
+            and Threat Analysis
+          </Text>
         </View>
 
-        <View style={styles.cardsContainer}>
-          <View style={styles.card}>
-            <View style={styles.cardIcon}>
-              <AlertIcon />
+        <View style={styles.mainContent}>
+          <View style={styles.infoGrid}>
+            <View style={styles.infoCard}>
+              <View style={styles.cardIcon}>
+                <ChartIcon />
+              </View>
+              <Text style={styles.cardTitle}>Vulnerability Analysis</Text>
+              <Text style={styles.cardDescription}>
+                In-depth security assessment with CVSS scoring and detailed remediation guidance
+              </Text>
             </View>
-            <Text style={styles.cardTitle}>Threat Analysis</Text>
-            <Text style={styles.cardDescription}>
-              In-depth security assessment and vulnerability evaluation with CVSS scoring
-            </Text>
-          </View>
 
-          <View style={styles.card}>
-            <View style={styles.cardIcon}>
-              <ChartIcon />
+            <View style={styles.infoCard}>
+              <View style={styles.cardIcon}>
+                <ShieldCheckIcon />
+              </View>
+              <Text style={styles.cardTitle}>MITRE Coverage</Text>
+              <Text style={styles.cardDescription}>
+                Comprehensive evaluation of security events and MITRE ATT&CK framework alignment
+              </Text>
             </View>
-            <Text style={styles.cardTitle}>Impact Analysis</Text>
-            <Text style={styles.cardDescription}>
-              Comprehensive evaluation of security events and MITRE ATT&CK coverage
-            </Text>
-          </View>
-
-          <View style={styles.card}>
-            <View style={styles.cardIcon}>
-              <ShieldIcon />
-            </View>
-            <Text style={styles.cardTitle}>Recommendations</Text>
-            <Text style={styles.cardDescription}>
-              Strategic insights and actionable security improvement measures
-            </Text>
           </View>
         </View>
-      </View>
 
-      <View style={styles.footer}>
-        <View>
-          <Text style={styles.footerText}>Generated on</Text>
-          <Text style={styles.footerHighlight}>{date}</Text>
-        </View>
-        <View>
-          <Text style={styles.footerText}>Powered by</Text>
-          <Text style={styles.footerHighlight}>Sensex Analytics</Text>
+        <View style={styles.decorativeLine} />
+
+        <View style={styles.footer}>
+          <View style={styles.footerLeft}>
+            <Text style={styles.footerLabel}>Generated on</Text>
+            <Text style={styles.footerValue}>{date}</Text>
+          </View>
+          <View style={styles.footerRight}>
+            <Text style={styles.footerLabel}>Powered by</Text>
+            <Text style={styles.footerValue}>
+              Sense<Text style={styles.brandHighlight}>X</Text> Analytics
+            </Text>
+          </View>
         </View>
       </View>
     </View>
