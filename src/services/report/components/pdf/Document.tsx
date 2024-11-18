@@ -10,13 +10,13 @@ import {AgentDetails} from './AgentDetails';
 
 const styles = StyleSheet.create({
   page: {
-    padding: 30,
+    padding: 0,
     fontFamily: 'Helvetica',
     backgroundColor: '#ffffff',
   },
   coverPage: {
     padding: 0,
-    backgroundColor: '#1e40af',
+    backgroundColor: '#1e293b',
   },
 });
 
@@ -40,23 +40,40 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </Page>
 
       {/* Executive Summary */}
-      <Page size="A4" style={styles.page}>
+      <Page 
+        size="A4" 
+        style={styles.page}
+        id="page_3"
+      >
         <ExecutiveSummary summary={summary} />
       </Page>
 
       {/* Vulnerability Analysis */}
-      <Page size="A4" style={styles.page}>
+      <Page 
+        size="A4" 
+        style={styles.page}
+        id="page_4"
+      >
         <VulnerabilityAnalysis summary={summary} />
       </Page>
 
       {/* MITRE Analysis */}
-      <Page size="A4" style={styles.page}>
+      <Page 
+        size="A4" 
+        style={styles.page}
+        id="page_5"
+      >
         <MitreAnalysis summary={summary} />
       </Page>
 
       {/* Agent Details */}
       {activeAgents.map((agent, index) => (
-        <Page key={agent.id} size="A4" style={styles.page}>
+        <Page 
+          key={agent.id} 
+          size="A4" 
+          style={styles.page}
+          id={`page_${6 + index}`}
+        >
           <AgentDetails agent={agent} index={index} />
         </Page>
       ))}
