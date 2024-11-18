@@ -3,12 +3,8 @@ import {StyleSheet, Text, View} from '@react-pdf/renderer';
 import {AgentSummary} from '../../summary';
 import type {Rule} from '@/types/wql';
 
+// ... (keep all styles unchanged)
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    position: 'relative',
-    paddingHorizontal: 16,
-  },
   header: {
     fontSize: 22,
     fontFamily: 'Helvetica-Bold',
@@ -208,15 +204,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
     color: '#2563eb',
   },
-  decorativeLine: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    backgroundColor: '#2563eb',
-    borderRadius: 1.5,
-  },
   progressBar: {
     height: 4,
     backgroundColor: '#e2e8f0',
@@ -307,7 +294,6 @@ const RuleCard: React.FC<{ rule: Rule }> = ({ rule }) => {
 
 interface AgentDetailsProps {
   agent: AgentSummary;
-  index: number;
 }
 
 export const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
@@ -323,10 +309,7 @@ export const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.decorativeLine} />
-      <Text style={styles.header}>Agent Details: {agent.name}</Text>
-
+    <>
       <View style={styles.summaryBox}>
         <Text style={styles.summaryText}>
           Agent <Text style={styles.summaryHighlight}>{agent.name}</Text> has reported 
@@ -429,6 +412,6 @@ export const AgentDetails: React.FC<AgentDetailsProps> = ({ agent }) => {
           )}
         </View>
       </View>
-    </View>
+    </>
   );
 };

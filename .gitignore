@@ -42,3 +42,4 @@ next-env.d.ts
 /public/data/poc5/
 /public/data/redteam2/
 /.idea
+/public/reports
