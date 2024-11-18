@@ -1,5 +1,5 @@
 import React from 'react';
-import {Page, StyleSheet, Text, View} from '@react-pdf/renderer';
+import {Link, Page, StyleSheet, Text, View} from '@react-pdf/renderer';
 import {GroupSummary} from '../../summary';
 import {CoverPage} from './CoverPage';
 import {TableOfContents} from './TableOfContents';
@@ -22,22 +22,22 @@ const styles = StyleSheet.create({
   pageContent: {
     flex: 1,
     padding: 16,
-    paddingTop: 64, // Increased from 40 to 64 to add more space below header
-    paddingBottom: 60, // Keep footer spacing the same
+    paddingTop: 64,
+    paddingBottom: 60,
   },
   header: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 48, // Increased from 40 to 48 to make header slightly taller
+    height: 48,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
     borderBottom: 1,
     borderBottomColor: '#e2e8f0',
-    backgroundColor: '#ffffff', // Added to ensure header is visible
+    backgroundColor: '#ffffff',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -75,18 +75,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderTop: 1,
     borderTopColor: '#e2e8f0',
-    backgroundColor: '#ffffff', // Added to ensure footer is visible
+    backgroundColor: '#ffffff',
   },
   footerLeft: {
     flexDirection: 'row',
-    gap: 16,
     alignItems: 'center',
   },
   footerRight: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  navButton: {
+  redirectButton: {
     fontSize: 10,
     fontFamily: 'Helvetica-Bold',
     color: '#2563eb',
@@ -94,11 +93,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
-  },
-  pageNumber: {
-    fontSize: 10,
-    fontFamily: 'Helvetica',
-    color: '#64748b',
   },
   poweredBy: {
     fontSize: 10,
@@ -118,7 +112,6 @@ interface ReportProps {
 export const Report: React.FC<ReportProps> = ({ summary }) => {
   const activeAgents = summary.agentSummaries.filter(agent => agent.totalAlerts > 0);
   const totalAgents = activeAgents.length;
-  const totalPages = 5 + totalAgents; // 5 fixed pages + agent pages
   const date = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -134,26 +127,12 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
     </View>
   );
 
-  const PageFooter = ({ 
-    pageNumber, 
-    showPrevious = true,
-    showNext = true,
-  }: { 
-    pageNumber: number;
-    showPrevious?: boolean;
-    showNext?: boolean;
-  }) => (
+  const PageFooter = () => (
     <View style={styles.footer}>
       <View style={styles.footerLeft}>
-        {showPrevious && (
-          <Text style={styles.navButton}>← Previous</Text>
-        )}
-        {showNext && (
-          <Text style={styles.navButton}>Next →</Text>
-        )}
-        <Text style={styles.pageNumber}>
-          Page {pageNumber} of {totalPages}
-        </Text>
+        <Link src="#page_2">
+          <Text style={styles.redirectButton}>Go to Table of Contents</Text>
+        </Link>
       </View>
       <View style={styles.footerRight}>
         <Text style={styles.poweredBy}>
@@ -171,13 +150,13 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </Page>
 
       {/* Table of Contents */}
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={styles.page} id="page_2">
         <View style={styles.decorativeLine} />
         <PageHeader title="Table of Contents" />
         <View style={styles.pageContent}>
           <TableOfContents agentCount={totalAgents} />
         </View>
-        <PageFooter pageNumber={2} />
+        <PageFooter />
       </Page>
 
       {/* Executive Summary */}
@@ -187,7 +166,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
         <View style={styles.pageContent}>
           <ExecutiveSummary summary={summary} />
         </View>
-        <PageFooter pageNumber={3} />
+        <PageFooter />
       </Page>
 
       {/* Vulnerability Analysis */}
@@ -197,7 +176,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
         <View style={styles.pageContent}>
           <VulnerabilityAnalysis summary={summary} />
         </View>
-        <PageFooter pageNumber={4} />
+        <PageFooter />
       </Page>
 
       {/* MITRE Analysis */}
@@ -207,7 +186,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
         <View style={styles.pageContent}>
           <MitreAnalysis summary={summary} />
         </View>
-        <PageFooter pageNumber={5} />
+        <PageFooter />
       </Page>
 
       {/* Agent Details */}
@@ -223,11 +202,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
           <View style={styles.pageContent}>
             <AgentDetails agent={agent} />
           </View>
-          <PageFooter 
-            pageNumber={6 + index}
-            showPrevious={index > 0}
-            showNext={index < totalAgents - 1}
-          />
+          <PageFooter />
         </Page>
       ))}
     </>
