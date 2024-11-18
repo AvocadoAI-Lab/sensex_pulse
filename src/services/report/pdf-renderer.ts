@@ -1,7 +1,7 @@
 import React from 'react';
 import {Document, renderToFile} from '@react-pdf/renderer';
-import {GroupSummary} from './summary';
-import {Report} from './components/pdf/Document';
+import {GroupSummary} from "@/services/report/summary";
+import {Report} from "@/components/pdf/Document";
 
 export class ReportPdfRenderer {
   public static async generatePdf(summary: GroupSummary, outputPath: string): Promise<void> {

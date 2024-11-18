@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
-import type {WQL_result} from '../../../types/wql';
-import {ReportSummaryService} from '../../../services/report/summary';
-import {ReportPdfRenderer} from '../../../services/report/pdf-renderer';
+import type {WQL_result} from '@/types/wql';
+import {ReportSummaryService} from '@/services/report/summary';
+import {ReportPdfRenderer} from '@/services/report/pdf-renderer';
 import path from 'path';
 import fs from 'fs/promises';
 
