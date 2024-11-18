@@ -2,8 +2,6 @@ import {NextRequest, NextResponse} from 'next/server';
 import type {WQL_result} from '@/types/wql';
 import {ReportSummaryService} from '@/services/report/summary';
 import {ReportPdfRenderer} from '@/services/report/pdf-renderer';
-import path from 'path';
-import fs from 'fs/promises';
 
 interface AgentResult {
     agent_name: string;
@@ -40,24 +38,20 @@ export async function POST(request: NextRequest) {
         // Generate summary using the group response
         const summary = ReportSummaryService.generateGroupSummaryFromResponse(body.wql_data);
 
-        // Create reports directory if it doesn't exist
-        const reportsDir = path.join(process.cwd(), 'public', 'reports');
-        await fs.mkdir(reportsDir, { recursive: true });
-
-        // Generate unique filename
+        // Generate unique filename for reference
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const filename = `${body.group_name.toLowerCase().replace(/\s+/g, '-')}-${timestamp}.pdf`;
-        const outputPath = path.join(reportsDir, filename);
 
-        // Generate PDF using React-PDF renderer
-        await ReportPdfRenderer.generatePdf(summary, outputPath);
+        // Generate PDF data in memory
+        const pdfData = await ReportPdfRenderer.generatePdfBuffer(summary);
 
-        // Return the URL to download the PDF
-        const pdfUrl = `/reports/${filename}`;
+        // Convert PDF buffer to base64
+        const pdfBase64 = pdfData.toString('base64');
         
         return NextResponse.json({
             success: true,
-            url: pdfUrl,
+            filename: filename,
+            pdf_data: pdfBase64,
             summary: {
                 total_agents: summary.totalAgents,
                 total_alerts: summary.totalAlerts,

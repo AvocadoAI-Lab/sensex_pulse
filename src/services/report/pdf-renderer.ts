@@ -1,10 +1,10 @@
 import React from 'react';
-import {Document, renderToFile} from '@react-pdf/renderer';
-import {GroupSummary} from "@/services/report/summary";
-import {Report} from "@/components/pdf/Document";
+import {Document, renderToBuffer} from '@react-pdf/renderer';
+import {GroupSummary} from '@/services/report/summary';
+import {Report} from '@/components/pdf/Document';
 
 export class ReportPdfRenderer {
-  public static async generatePdf(summary: GroupSummary, outputPath: string): Promise<void> {
+  public static async generatePdfBuffer(summary: GroupSummary): Promise<Buffer> {
     try {
       const doc = React.createElement(
         Document,
@@ -12,7 +12,7 @@ export class ReportPdfRenderer {
         React.createElement(Report, { summary })
       );
 
-      await renderToFile(doc, outputPath);
+      return await renderToBuffer(doc);
     } catch (error) {
       console.error('Error generating PDF:', error);
       throw error;
