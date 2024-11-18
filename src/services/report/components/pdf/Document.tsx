@@ -25,6 +25,11 @@ const styles = StyleSheet.create({
     paddingTop: 64,
     paddingBottom: 60,
   },
+  tocContent: {
+    flex: 1,
+    padding: 0, // Remove padding for table of contents
+    paddingBottom: 60, // Keep space for footer
+  },
   header: {
     position: 'absolute',
     top: 0,
@@ -152,8 +157,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       {/* Table of Contents */}
       <Page size="A4" style={styles.page} id="page_2">
         <View style={styles.decorativeLine} />
-        <PageHeader title="Table of Contents" />
-        <View style={styles.pageContent}>
+        <View style={styles.tocContent}>
           <TableOfContents agentCount={totalAgents} />
         </View>
         <PageFooter />
@@ -198,7 +202,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
           id={`page_${6 + index}`}
         >
           <View style={styles.decorativeLine} />
-          <PageHeader title={`Agent Details: ${agent.name}`} />
+          <PageHeader title={`Agent ${index + 1} Analysis`} />
           <View style={styles.pageContent}>
             <AgentDetails agent={agent} />
           </View>
