@@ -1,5 +1,5 @@
 import type {Hit} from '@/types/wql';
-import type {RuleAnalysis} from '../types';
+import {RuleAnalysis} from "@/services/report/components/pdf/experimental/deep-analysis/types";
 
 export const analyzeRulePatterns = (alerts: Hit[]): RuleAnalysis => {
   const ruleGroups = new Map<string, {

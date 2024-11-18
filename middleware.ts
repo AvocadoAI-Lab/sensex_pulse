@@ -1,5 +1,5 @@
 import createMiddleware from 'next-intl/middleware';
-import {defaultLocale, locales} from './src/i18n/routing';
+import {defaultLocale, locales} from '@/i18n/routing';
 
 // This middleware intercepts requests to `/` and will redirect
 // to one of the configured locales instead (e.g. `/en`)

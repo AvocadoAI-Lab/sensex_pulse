@@ -1,5 +1,5 @@
 import type {Hit} from '@/types/wql';
-import type {WindowsAnalysis} from '../types';
+import {WindowsAnalysis} from "@/services/report/components/pdf/experimental/deep-analysis/types";
 
 export const analyzeWindowsEvents = (alerts: Hit[]): WindowsAnalysis => {
   const eventTypes = new Map<string, number>();

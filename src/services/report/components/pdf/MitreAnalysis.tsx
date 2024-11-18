@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleSheet, Text, View} from '@react-pdf/renderer';
-import {GroupSummary} from '../../summary';
+import {GroupSummary} from "@/services/report/summary";
 
 const styles = StyleSheet.create({
   // Remove header style since it's handled by Document.tsx

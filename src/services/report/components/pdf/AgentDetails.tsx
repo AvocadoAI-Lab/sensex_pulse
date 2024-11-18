@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, View} from '@react-pdf/renderer';
-import {AgentSummary} from '../../summary';
 import type {Rule} from '@/types/wql';
+import {AgentSummary} from "@/services/report/summary";
 
 const styles = StyleSheet.create({
   section: {

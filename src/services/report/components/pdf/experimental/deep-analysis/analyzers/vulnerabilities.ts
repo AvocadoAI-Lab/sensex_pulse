@@ -1,5 +1,5 @@
 import type {Hit} from '@/types/wql';
-import type {VulnerabilityAnalysis} from '../types';
+import {VulnerabilityAnalysis} from "@/services/report/components/pdf/experimental/deep-analysis/types";
 
 export const analyzeVulnerabilities = (alerts: Hit[]): VulnerabilityAnalysis => {
   const vulnsByCVSS = new Map<number, number>();

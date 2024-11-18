@@ -1,13 +1,13 @@
 import React from 'react';
 import {Link, Page, StyleSheet, Text, View} from '@react-pdf/renderer';
-import {GroupSummary} from '../../summary';
-import {CoverPage} from './CoverPage';
-import {TableOfContents} from './TableOfContents';
-import {ExecutiveSummary} from './ExecutiveSummary';
-import {VulnerabilityAnalysis} from './VulnerabilityAnalysis';
-import {MitreAnalysis} from './MitreAnalysis';
-import {AgentDetails} from './AgentDetails';
-import DeepAnalysis from './experimental/deep-analysis';
+import {GroupSummary} from "@/services/report/summary";
+import {TableOfContents} from "@/services/report/components/pdf/TableOfContents";
+import {CoverPage} from "@/services/report/components/pdf/CoverPage";
+import {ExecutiveSummary} from "@/services/report/components/pdf/ExecutiveSummary";
+import {VulnerabilityAnalysis} from "@/services/report/components/pdf/VulnerabilityAnalysis";
+import {MitreAnalysis} from "@/services/report/components/pdf/MitreAnalysis";
+import {AgentDetails} from "@/services/report/components/pdf/AgentDetails";
+import DeepAnalysis from "@/services/report/components/pdf/experimental/deep-analysis";
 
 const styles = StyleSheet.create({
   page: {
