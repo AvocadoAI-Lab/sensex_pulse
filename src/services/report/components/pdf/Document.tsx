@@ -7,7 +7,6 @@ import {ExecutiveSummary} from "@/services/report/components/pdf/ExecutiveSummar
 import {VulnerabilityAnalysis} from "@/services/report/components/pdf/VulnerabilityAnalysis";
 import {MitreAnalysis} from "@/services/report/components/pdf/MitreAnalysis";
 import {AgentDetails} from "@/services/report/components/pdf/AgentDetails";
-import DeepAnalysis from "@/services/report/components/pdf/experimental/deep-analysis";
 
 const styles = StyleSheet.create({
   page: {
@@ -224,16 +223,6 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
         </Page>
       ))}
 
-      {/* Deep Analysis */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.anchor} id={`page_${6 + activeAgents.length}`} />
-        <View style={styles.decorativeLine} />
-        <PageHeader title="Deep Analysis" />
-        <View style={styles.pageContent}>
-          <DeepAnalysis summary={summary} />
-        </View>
-        <PageFooter />
-      </Page>
     </>
   );
 };
