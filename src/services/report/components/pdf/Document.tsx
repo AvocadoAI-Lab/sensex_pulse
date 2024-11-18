@@ -111,6 +111,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
     color: '#2563eb',
   },
+  anchor: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: 1,
+    height: 1,
+  },
 });
 
 interface ReportProps {
@@ -158,7 +165,8 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </Page>
 
       {/* Table of Contents */}
-      <Page size="A4" style={styles.tocPage} id="page_2">
+      <Page size="A4" style={styles.tocPage}>
+        <View style={styles.anchor} id="page_2" />
         <View style={styles.tocContent}>
           <TableOfContents agentCount={totalAgents} />
         </View>
@@ -166,7 +174,8 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </Page>
 
       {/* Executive Summary */}
-      <Page size="A4" style={styles.page} id="page_3">
+      <Page size="A4" style={styles.page}>
+        <View style={styles.anchor} id="page_3" />
         <View style={styles.decorativeLine} />
         <PageHeader title="Executive Summary" />
         <View style={styles.pageContent}>
@@ -176,7 +185,8 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </Page>
 
       {/* Vulnerability Analysis */}
-      <Page size="A4" style={styles.page} id="page_4">
+      <Page size="A4" style={styles.page}>
+        <View style={styles.anchor} id="page_4" />
         <View style={styles.decorativeLine} />
         <PageHeader title="Vulnerability Analysis" />
         <View style={styles.pageContent}>
@@ -186,7 +196,8 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </Page>
 
       {/* MITRE Analysis */}
-      <Page size="A4" style={styles.page} id="page_5">
+      <Page size="A4" style={styles.page}>
+        <View style={styles.anchor} id="page_5" />
         <View style={styles.decorativeLine} />
         <PageHeader title="MITRE Analysis" />
         <View style={styles.pageContent}>
@@ -201,8 +212,8 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
           key={agent.id} 
           size="A4" 
           style={styles.page}
-          id={`page_${6 + index}`}
         >
+          <View style={styles.anchor} id={`page_${6 + index}`} />
           <View style={styles.decorativeLine} />
           <PageHeader title={`Agent ${index + 1} Analysis`} />
           <View style={styles.pageContent}>
