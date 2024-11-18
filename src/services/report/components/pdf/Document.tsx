@@ -25,10 +25,13 @@ const styles = StyleSheet.create({
     paddingTop: 64,
     paddingBottom: 60,
   },
+  tocPage: {
+    backgroundColor: '#ffffff',
+    position: 'relative',
+  },
   tocContent: {
     flex: 1,
-    padding: 0, // Remove padding for table of contents
-    paddingBottom: 60, // Keep space for footer
+    paddingBottom: 60,
   },
   header: {
     position: 'absolute',
@@ -155,8 +158,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </Page>
 
       {/* Table of Contents */}
-      <Page size="A4" style={styles.page} id="page_2">
-        <View style={styles.decorativeLine} />
+      <Page size="A4" style={styles.tocPage} id="page_2">
         <View style={styles.tocContent}>
           <TableOfContents agentCount={totalAgents} />
         </View>
