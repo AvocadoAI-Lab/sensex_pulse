@@ -221,7 +221,7 @@ export const CoverPage: React.FC = () => {
           <View style={styles.footerRight}>
             <Text style={styles.footerLabel}>Powered by</Text>
             <Text style={styles.footerValue}>
-              Sense<Text style={styles.brandHighlight}>X</Text> Analytics
+              Sense<Text style={styles.brandHighlight}>L Copilot</Text> Analytics
             </Text>
           </View>
         </View>
