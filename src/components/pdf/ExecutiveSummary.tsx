@@ -235,21 +235,21 @@ export const ExecutiveSummary: React.FC<ExecutiveSummaryProps> = ({ summary }) =
 
     if (summary.criticalVulnerabilities.length > 0) {
       recommendations.push({
-        title: '🚨 Critical Vulnerabilities',
+        title: 'Critical Vulnerabilities',
         text: `Patch ${summary.criticalVulnerabilities.length} critical vulnerabilities identified across systems to prevent potential exploitation.`
       });
     }
 
     if (highSeverityCount > 0) {
       recommendations.push({
-        title: '⚠️ High Severity Alerts',
+        title: 'High Severity Alerts',
         text: `Review and respond to ${highSeverityCount} high severity security events that may indicate significant security threats.`
       });
     }
 
     if (Object.keys(summary.mitreCoverage.tactics).length < 8) {
       recommendations.push({
-        title: '🎯 MITRE Coverage',
+        title: 'MITRE Coverage',
         text: 'Expand security monitoring to cover more MITRE ATT&CK tactics for comprehensive threat detection.'
       });
     }
