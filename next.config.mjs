@@ -1,11 +1,6 @@
 /** @type {import('next').NextConfig} */
 const config = {
-  output: 'standalone',
-  experimental: {
-    serverOptions: {
-      port: 29005
-    }
-  }
+  output: 'standalone'
 };
 
 export default config;

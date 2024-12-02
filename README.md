@@ -1,102 +1,66 @@
 # Sensex Pulse
 
-## CI Workflows
+這是一個基於 Next.js 開發的網頁應用程式。
 
-This project uses GitHub Actions for continuous integration. Here's an overview of our workflows:
+## 使用 Docker Compose 運行服務
 
-### Continuous Integration
+### 步驟 1: 建立 docker-compose.yml
 
-Our CI workflow (`ci.yml`) runs on every push to main/master and pull requests:
+在專案根目錄建立 `docker-compose.yml` 檔案，內容如下：
 
-- 🔍 Type checking with TypeScript
-- 📝 Linting with ESLint
-- 🏗️ Building the application
-- 💾 Dependency caching for faster builds
-
-### Dependency Management
-
-We use Dependabot (`dependabot.yml`) to keep dependencies up-to-date:
-
-- 📦 Weekly updates for npm packages
-- 🔄 Weekly updates for GitHub Actions
-- 🛡️ Security patches prioritization
-- 🎯 Controlled version updates:
-  - Dependencies are grouped for easier review
-  - Major version updates are carefully managed
-
-#### Version Update Strategy
-
-To maintain stability:
-- Dependencies are grouped by development and production
-- Major version updates for critical packages are managed through version ignores
-- Security updates are prioritized
-
-### Label Management
-
-The repository uses automated label management (`sync-labels.yml`) to maintain consistent issue and PR labeling:
-
-- 🏷️ Automated label creation and updates
-- 📊 Standardized label colors and descriptions
-- 🤖 Integration with Dependabot workflows
-
-Available labels:
-- `dependencies`: Pull requests that update a dependency file
-- `security`: Security vulnerability fixes
-- `ci`: Changes to CI/CD configuration
-- `documentation`: Documentation changes
-- `enhancement`: New features or enhancements
-- `bug`: Bug fixes
-
-## Development
-
-To run the development server:
-
-```bash
-npm run dev
+```yaml
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "29005:29005"
+    environment:
+      - PORT=29005
 ```
 
-To build the application:
+### 步驟 2: 運行服務
+
+在專案根目錄執行以下指令：
 
 ```bash
-npm run build
+docker-compose up
 ```
 
-To run linting:
+如果要在背景執行，可以加上 `-d` 參數：
 
 ```bash
-npm run lint
+docker-compose up -d
 ```
 
-## Environment Variables
+### 步驟 3: 訪問服務
 
-The following environment variables are required for development:
+服務啟動後，可以通過以下網址訪問：
 
-- `NEXT_PUBLIC_API_URL`: The URL for the API endpoint
+```
+http://localhost:29005
+```
 
-## Contributing
+### 停止服務
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Create a pull request
-4. Wait for CI checks to pass
-5. Request review
+要停止服務，執行：
 
-The CI workflow will automatically check your changes for type errors, linting issues, and build success.
-
-## Dependabot Configuration
-
-To work with Dependabot:
-
-1. Pull requests are automatically created for updates
-2. Updates are grouped by development and production dependencies
-3. Version updates are controlled to minimize breaking changes
-4. Security updates are prioritized
-
-To manually trigger a Dependabot update:
 ```bash
-@dependabot rebase
+docker-compose down
 ```
 
-## License
+## 其他常用指令
 
-[Add your license here]
+- 重新建構映像：
+  ```bash
+  docker-compose build
+  ```
+
+- 查看服務日誌：
+  ```bash
+  docker-compose logs
+  ```
+
+- 查看服務狀態：
+  ```bash
+  docker-compose ps
