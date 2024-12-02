@@ -151,7 +151,7 @@ export const Report: React.FC<ReportProps> = ({ summary }) => {
       </View>
       <View style={styles.footerRight}>
         <Text style={styles.poweredBy}>
-          Powered by <Text style={styles.brandText}>SenseX</Text> Analytics
+          Powered by <Text style={styles.brandText}>SenseL Copilot</Text> Analytics
         </Text>
       </View>
     </View>
